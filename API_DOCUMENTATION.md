@@ -383,11 +383,20 @@ GET /api/rules/export
 x-user-id: <admin用户ID>
 ```
 
-**curl 示例**:
+**curl 示例** (bash / Git Bash / WSL):
 ```bash
 # 导出当前所有活跃规则为 JSON
 curl -H "x-user-id: <admin用户ID>" http://localhost:3000/api/rules/export > rules-export.json
 ```
+
+**PowerShell 示例** (Windows 原生):
+```powershell
+# 导出当前所有活跃规则为 JSON
+$headers = @{ "x-user-id" = "<admin用户ID>" }
+Invoke-WebRequest -Uri "http://localhost:3000/api/rules/export" -Headers $headers -OutFile "rules-export.json"
+```
+
+> **重要说明**: Windows PowerShell 中的 `curl` 是 `Invoke-WebRequest` 的别名，语法与标准 curl 不同。建议使用上面的 PowerShell 语法，或安装 Git Bash 使用标准 curl。
 
 **响应示例**:
 ```json
@@ -681,3 +690,93 @@ approving (审批中)
 | 步骤 [xxx] 已完成，重复提交 | 步骤已完成 | 进入下一步或归档 |
 | 没有匹配的审批规则 | 合同属性不匹配任何规则 | 检查规则配置或调整合同属性 |
 | 合同状态 [xxx] 不允许提交 | 状态错误 | 确保是 draft 或 supplement_requested 状态 |
+
+---
+
+## 回归测试
+
+### 测试脚本说明
+
+| 测试脚本 | 说明 |
+|----------|------|
+| `tests/test-rules-import-export.js` | 规则导入导出回滚完整回归测试 |
+| `tests/test-persistence-restart.js` | 跨服务重启持久性验证测试 |
+
+### 运行测试
+
+#### 1. 完整回归测试
+```bash
+# 确保服务已启动
+npm start
+
+# 运行完整回归测试（需要先运行 npm run seed 初始化数据）
+node tests/test-rules-import-export.js
+```
+
+#### 2. 跨服务重启持久性测试
+```bash
+# 先运行第一部分测试
+node tests/test-rules-import-export.js
+
+# 测试完成后，重启服务（Ctrl+C 然后 npm start）
+
+# 使用测试输出的参数运行持久性测试
+node tests/test-persistence-restart.js <contractId> <ruleName>
+```
+
+### 测试覆盖范围
+
+✅ **权限测试**
+- 普通用户不能导出/导入/回滚规则
+- 普通用户不能查看全局审计日志
+- 普通用户看不到审计日志敏感字段
+
+✅ **导出测试**
+- 导出 JSON 包含所有必要字段（条件、步骤、优先级、版本）
+- 导出格式版本标记
+
+✅ **导入测试**
+- 预检模式（preview=true）只返回差异，不落库
+- 结构校验（JSON Schema）
+- 角色有效性校验
+- 部门ID有效性校验
+- 优先级冲突检测
+- 重名规则检测
+- 保留旧版本，创建新版本
+- 写审计日志
+
+✅ **回滚测试**
+- 回滚原因必填
+- 记录操作者和原因
+- 创建新版本号（不修改历史）
+- 新提交合同使用回滚后的规则
+- 审批中合同不受影响
+
+✅ **一致性测试**
+- 导出再导入数据一致性
+- 审批中合同不受规则变更影响
+- 新提交合同使用最新规则版本
+
+✅ **持久性测试**
+- 跨服务重启数据完整
+- 内存与文件数据一致
+- 版本历史完整保留
+
+---
+
+## 重要设计约定
+
+### 规则版本管理
+1. **永不修改历史版本**：每次导入或回滚都创建新版本
+2. **审批中合同不受影响**：合同提交时绑定规则ID和版本，后续规则变更不影响已在审批中的合同
+3. **新合同使用最新规则**：新提交的合同始终匹配当前活跃的最新版本规则
+
+### 审计日志
+1. **所有敏感操作留痕**：导出、导入、回滚都写入审计日志
+2. **权限隔离**：普通用户看不到变更前后的具体值和IP地址
+3. **回滚原因强制记录**：回滚操作必须填写原因，永久留存
+
+### 数据持久化
+1. **立即持久化**：导入和回滚操作调用 `forceSave()` 立即写入磁盘
+2. **一致性校验**：提供 `/api/users/persistence-check` 接口验证数据完整性
+3. **原子操作**：所有数据库操作通过事务队列保证一致性

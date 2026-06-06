@@ -108,6 +108,23 @@ router.get('/export', (req, res) => {
   }
 });
 
+function sanitizeImportData(rawData) {
+  let data = rawData;
+  
+  if (data && data.rules && !Array.isArray(data)) {
+    data = { rules: data.rules };
+  }
+  
+  if (data && Array.isArray(data.rules)) {
+    data.rules = data.rules.map(rule => {
+      const { version, is_active, created_at, created_by, id, ...sanitized } = rule;
+      return sanitized;
+    });
+  }
+  
+  return data;
+}
+
 const importRuleSchema = Joi.object({
   rules: Joi.array().items(Joi.object({
     name: Joi.string().required(),
@@ -216,7 +233,8 @@ router.post('/import', (req, res) => {
     }
 
     const preview = req.query.preview === 'true';
-    const { error, value } = importRuleSchema.validate(req.body);
+    const sanitizedBody = sanitizeImportData(req.body);
+    const { error, value } = importRuleSchema.validate(sanitizedBody);
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
@@ -306,6 +324,7 @@ router.post('/import', (req, res) => {
         old_value: existingRules.find(r => r.is_active) ? {
           name: ruleData.name,
           version: existingRules.find(r => r.is_active).version,
+          description: existingRules.find(r => r.is_active).description,
           conditions: existingRules.find(r => r.is_active).conditions,
           steps: existingRules.find(r => r.is_active).steps,
           priority: existingRules.find(r => r.is_active).priority
@@ -313,6 +332,7 @@ router.post('/import', (req, res) => {
         new_value: {
           name: ruleData.name,
           version: newVersion,
+          description: ruleData.description,
           conditions: ruleData.conditions,
           steps: ruleData.steps,
           priority: ruleData.priority
@@ -380,6 +400,7 @@ router.post('/:name/rollback/:version', (req, res) => {
       old_value: currentActive ? {
         name: name,
         version: currentActive.version,
+        description: currentActive.description,
         conditions: currentActive.conditions,
         steps: currentActive.steps,
         priority: currentActive.priority
@@ -387,6 +408,7 @@ router.post('/:name/rollback/:version', (req, res) => {
       new_value: {
         name: name,
         version: newVersion,
+        description: targetVersion.description,
         rolled_back_from: currentActive?.version || null,
         rolled_back_to: targetVersion.version,
         conditions: targetVersion.conditions,
