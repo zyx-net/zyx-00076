@@ -170,8 +170,9 @@ async function runTests() {
   assert(previewRes.status === 200, '预检模式返回200');
   assert(previewRes.data.preview === true, '响应标记为预览模式');
   assert(previewRes.data.can_import === true, '可以导入');
-  assert(previewRes.data.differences[0].action === 'create', '识别为新建规则');
-  assert(previewRes.data.differences[0].name === testRule.name, '规则名称匹配');
+  assert(previewRes.data.summary.create === 1, '摘要显示1条新增');
+  assert(previewRes.data.rules[0].change_type === 'create', '识别为新建规则');
+  assert(previewRes.data.rules[0].name === testRule.name, '规则名称匹配');
 
   log('4. 测试导入冲突检测 - 重名');
   
@@ -516,7 +517,10 @@ async function runTests() {
     }, { rules: [conflictRule] });
     
     assert(conflictRes.status === 200, '优先级冲突预检成功');
-    assert(conflictRes.data.warnings.some(w => w.includes('优先级') && w.includes('冲突')), '检测到优先级冲突警告');
+  assert(conflictRes.data.summary.priority_conflict === 1, '摘要显示1条优先级冲突');
+  assert(conflictRes.data.rules[0].change_type === 'priority_conflict', '识别为优先级冲突');
+  assert(conflictRes.data.rules[0].conflict_details.type === 'priority_conflict', '冲突详情包含类型');
+  assert(conflictRes.data.warnings.some(w => w.includes('优先级') && w.includes('冲突')), '检测到优先级冲突警告');
   } else {
     console.log('  跳过：活跃规则不足2条，无法测试优先级冲突');
   }
@@ -541,12 +545,13 @@ async function runTests() {
   }, { rules: [modifiedRule3] });
   
   assert(previewRes2.status === 200, '预检模式识别变更成功');
-  const diff = previewRes2.data.differences.find(d => d.name === testRule.name);
-  assert(diff !== null, '找到差异记录');
-  assert(diff.action === 'update', '识别为更新操作');
-  assert(diff.changes.includes('steps'), '识别到steps变更');
-  assert(diff.changes.includes('priority'), '识别到priority变更');
-  assert(diff.changes.includes('description'), '识别到description变更');
+  assert(previewRes2.data.summary.update === 1, '摘要显示1条更新');
+  const ruleSummary = previewRes2.data.rules.find(r => r.name === testRule.name);
+  assert(ruleSummary !== null, '找到差异记录');
+  assert(ruleSummary.change_type === 'update', '识别为更新操作');
+  assert(ruleSummary.field_diff.steps !== undefined, '识别到steps变更');
+  assert(ruleSummary.field_diff.priority !== undefined, '识别到priority变更');
+  assert(ruleSummary.field_diff.description !== undefined, '识别到description变更');
 
   console.log('\n========================================');
   console.log('  ✅ 所有回归测试通过！');

@@ -1,8 +1,8 @@
-require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
 
+const config = require('./config');
 const contractsRouter = require('./routes/contracts');
 const usersRouter = require('./routes/users');
 const rulesRouter = require('./routes/rules');
@@ -10,7 +10,7 @@ const departmentsRouter = require('./routes/departments');
 const archivesRouter = require('./routes/archives');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = config.port;
 
 const archiveDir = path.resolve(__dirname, '../data/archives');
 if (!fs.existsSync(archiveDir)) {

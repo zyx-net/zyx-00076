@@ -1,11 +1,14 @@
 const express = require('express');
 const Joi = require('joi');
+const { v4: uuidv4 } = require('uuid');
 const ApprovalRule = require('../models/ApprovalRule');
 const RuleEngine = require('../services/RuleEngine');
+const { calculateImportSummary } = require('../services/RuleImportSummary');
 const authMiddleware = require('../middleware/auth');
 const User = require('../models/User');
 const Department = require('../models/Department');
 const AuditLog = require('../models/AuditLog');
+const config = require('../config');
 
 const router = express.Router();
 router.use(authMiddleware);
@@ -143,88 +146,7 @@ const importRuleSchema = Joi.object({
   })).required()
 });
 
-function validateImportRules(importData) {
-  const errors = [];
-  const warnings = [];
-  const info = [];
-  const validRoles = ['applicant', 'department_manager', 'finance', 'legal', 'risk', 'ceo', 'admin'];
-  const existingRules = ApprovalRule.findAll();
-  const existingNames = existingRules.map(r => r.name);
-  const existingPriorities = existingRules.filter(r => r.is_active).map(r => r.priority);
-  const allDepartments = Department.findAll().map(d => d.id);
-  const allUsers = User.findAll();
 
-  for (let i = 0; i < importData.rules.length; i++) {
-    const rule = importData.rules[i];
-    const prefix = `规则[${i}] "${rule.name}"`;
-
-    if (!rule.name || rule.name.trim() === '') {
-      errors.push(`${prefix}: 规则名称不能为空`);
-    }
-
-    if (existingNames.includes(rule.name)) {
-      const existingVersions = existingRules.filter(r => r.name === rule.name);
-      const activeVersion = existingVersions.find(r => r.is_active);
-      if (activeVersion) {
-        warnings.push(`${prefix}: 名称已存在，将创建新版本（当前最新版本: v${activeVersion.version}）`);
-      } else {
-        info.push(`${prefix}: 名称已存在但已停用，将创建新版本并激活`);
-      }
-    }
-
-    if (existingPriorities.includes(rule.priority)) {
-      const conflictingRule = existingRules.find(r => r.is_active && r.priority === rule.priority);
-      if (conflictingRule && conflictingRule.name !== rule.name) {
-        warnings.push(`${prefix}: 优先级 ${rule.priority} 与现有规则 "${conflictingRule.name}" 冲突，导入后将按版本号排序`);
-      }
-    }
-
-    const validation = RuleEngine.validateRuleSteps(rule);
-    if (!validation.valid) {
-      errors.push(`${prefix}: 步骤验证失败: ${validation.errors.join('; ')}`);
-    }
-
-    for (const step of rule.steps) {
-      for (const role of step.required_roles) {
-        if (!validRoles.includes(role)) {
-          errors.push(`${prefix}: 步骤 "${step.name}" 引用了无效角色: ${role}`);
-        } else {
-          const usersWithRole = allUsers.filter(u => u.roles.includes(role));
-          if (usersWithRole.length === 0) {
-            warnings.push(`${prefix}: 步骤 "${step.name}" 的角色 ${role} 没有配置用户`);
-          }
-        }
-      }
-    }
-
-    if (rule.conditions && rule.conditions.type === 'simple' && rule.conditions.field === 'department_id') {
-      const deptId = rule.conditions.value;
-      if (deptId && !allDepartments.includes(deptId)) {
-        warnings.push(`${prefix}: 条件引用了不存在的部门ID: ${deptId}`);
-      }
-      if (rule.conditions.values) {
-        for (const v of rule.conditions.values) {
-          if (!allDepartments.includes(v)) {
-            warnings.push(`${prefix}: 条件引用了不存在的部门ID: ${v}`);
-          }
-        }
-      }
-    }
-  }
-
-  const importedNames = importData.rules.map(r => r.name);
-  const nameCounts = {};
-  for (const name of importedNames) {
-    nameCounts[name] = (nameCounts[name] || 0) + 1;
-  }
-  for (const [name, count] of Object.entries(nameCounts)) {
-    if (count > 1) {
-      errors.push(`导入的规则中存在重名: "${name}" 出现 ${count} 次`);
-    }
-  }
-
-  return { errors, warnings, info };
-}
 
 router.post('/import', (req, res) => {
   try {
@@ -239,117 +161,115 @@ router.post('/import', (req, res) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    const validation = validateImportRules(value);
-    if (validation.errors.length > 0) {
+    const importSummary = calculateImportSummary(value, {
+      includeNoChangeInAudit: config.ruleImport.auditNoChange
+    });
+
+    const hasValidationErrors = importSummary.rules.some(r =>
+      r.change_type === 'validation_failed' || r.change_type === 'duplicate_name'
+    );
+
+    if (hasValidationErrors) {
       return res.status(400).json({
-        errors: validation.errors,
-        warnings: validation.warnings,
-        info: validation.info
+        preview: preview,
+        can_import: false,
+        summary: importSummary.summary,
+        total: importSummary.total,
+        rules: importSummary.rules,
+        errors: importSummary.errors,
+        warnings: importSummary.warnings
       });
     }
 
     if (preview) {
-      const differences = [];
-      const existingRules = ApprovalRule.findAll();
-
-      for (const importedRule of value.rules) {
-        const existing = existingRules.find(r => r.name === importedRule.name && r.is_active);
-        if (existing) {
-          const diff = {
-            name: importedRule.name,
-            action: 'update',
-            current_version: existing.version,
-            new_version: existing.version + 1,
-            changes: []
-          };
-
-          if (JSON.stringify(existing.conditions) !== JSON.stringify(importedRule.conditions)) {
-            diff.changes.push('conditions');
-          }
-          if (JSON.stringify(existing.steps) !== JSON.stringify(importedRule.steps)) {
-            diff.changes.push('steps');
-          }
-          if (existing.priority !== importedRule.priority) {
-            diff.changes.push('priority');
-          }
-          if (existing.description !== importedRule.description) {
-            diff.changes.push('description');
-          }
-          if (diff.changes.length === 0) {
-            diff.action = 'no_change';
-          }
-          differences.push(diff);
-        } else {
-          differences.push({
-            name: importedRule.name,
-            action: 'create',
-            new_version: 1
-          });
-        }
-      }
-
       return res.json({
         preview: true,
         can_import: true,
-        differences,
-        warnings: validation.warnings,
-        info: validation.info
+        summary: importSummary.summary,
+        total: importSummary.total,
+        rules: importSummary.rules,
+        warnings: importSummary.warnings
       });
     }
 
+    const batchId = uuidv4();
     const results = [];
-    for (const ruleData of value.rules) {
+    const db = require('../database/db');
+
+    for (const ruleSummary of importSummary.rules) {
+      const ruleData = value.rules[ruleSummary.index];
+
+      if (ruleSummary.change_type === 'no_change' && !config.ruleImport.auditNoChange) {
+        results.push({
+          name: ruleData.name,
+          version: ruleSummary.current_version,
+          change_type: ruleSummary.change_type,
+          skipped: true,
+          reason: '无变化，未创建新版本'
+        });
+        continue;
+      }
+
       const existingRules = ApprovalRule.findAllVersionsByName(ruleData.name);
-      const maxVersion = existingRules.length > 0 ? Math.max(...existingRules.map(r => r.version)) : 0;
-      const newVersion = maxVersion + 1;
+      const previousActive = existingRules.find(r => r.is_active);
 
       ApprovalRule.deactivateAllByName(ruleData.name);
 
       const newRule = ApprovalRule.createVersion({
         ...ruleData,
-        version: newVersion,
+        version: ruleSummary.new_version,
         created_by: req.user.id
       });
 
       results.push({
         name: ruleData.name,
-        version: newVersion,
+        version: ruleSummary.new_version,
         id: newRule.id,
-        previous_active_version: existingRules.find(r => r.is_active)?.version || null
+        change_type: ruleSummary.change_type,
+        previous_active_version: previousActive?.version || null,
+        field_diff: ruleSummary.field_diff
       });
 
-      AuditLog.create({
-        user_id: req.user.id,
-        action: 'rule_import',
-        old_value: existingRules.find(r => r.is_active) ? {
-          name: ruleData.name,
-          version: existingRules.find(r => r.is_active).version,
-          description: existingRules.find(r => r.is_active).description,
-          conditions: existingRules.find(r => r.is_active).conditions,
-          steps: existingRules.find(r => r.is_active).steps,
-          priority: existingRules.find(r => r.is_active).priority
-        } : null,
-        new_value: {
-          name: ruleData.name,
-          version: newVersion,
-          description: ruleData.description,
-          conditions: ruleData.conditions,
-          steps: ruleData.steps,
-          priority: ruleData.priority
-        },
-        ip_address: req.ip
-      });
+      if (ruleSummary.should_audit) {
+        AuditLog.create({
+          user_id: req.user.id,
+          action: 'rule_import',
+          old_value: previousActive ? {
+            name: ruleData.name,
+            version: previousActive.version,
+            description: previousActive.description,
+            conditions: previousActive.conditions,
+            steps: previousActive.steps,
+            priority: previousActive.priority
+          } : null,
+          new_value: {
+            name: ruleData.name,
+            version: ruleSummary.new_version,
+            description: ruleData.description,
+            conditions: ruleData.conditions,
+            steps: ruleData.steps,
+            priority: ruleData.priority,
+            change_type: ruleSummary.change_type,
+            batch_id: batchId,
+            field_diff: ruleSummary.field_diff
+          },
+          ip_address: req.ip
+        });
+      }
     }
 
-    const db = require('../database/db');
     db.forceSave();
 
     res.json({
       success: true,
-      imported: results.length,
+      batch_id: batchId,
+      imported: results.filter(r => !r.skipped).length,
+      skipped: results.filter(r => r.skipped).length,
+      total: results.length,
+      summary: importSummary.summary,
+      rules: importSummary.rules,
       results,
-      warnings: validation.warnings,
-      info: validation.info
+      warnings: importSummary.warnings
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

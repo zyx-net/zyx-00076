@@ -456,29 +456,158 @@ curl -H "x-user-id: <admin用户ID>" -H "Content-Type: application/json" \
   http://localhost:3000/api/rules/import
 ```
 
+**变更类型说明**:
+| change_type | 说明 |
+|-------------|------|
+| `create` | 新增规则 |
+| `update` | 生成新版本（有字段变化） |
+| `no_change` | 无变化 |
+| `priority_conflict` | 优先级冲突 |
+| `validation_failed` | 校验失败 |
+| `duplicate_name` | 导入文件内重名 |
+
 **预检模式响应示例**:
 ```json
 {
   "preview": true,
   "can_import": true,
-  "differences": [
+  "summary": {
+    "create": 1,
+    "update": 1,
+    "no_change": 1,
+    "priority_conflict": 0,
+    "validation_failed": 0,
+    "duplicate_name": 0
+  },
+  "total": 3,
+  "rules": [
     {
-      "name": "中风险中等金额合同",
-      "action": "update",
-      "current_version": 2,
-      "new_version": 3,
-      "changes": ["steps", "priority"]
+      "index": 0,
+      "name": "新规则",
+      "change_type": "create",
+      "current_version": null,
+      "new_version": 1,
+      "field_diff": {},
+      "validation_errors": [],
+      "conflict_details": null,
+      "should_audit": true
     },
     {
-      "name": "新规则",
-      "action": "create",
-      "new_version": 1
+      "index": 1,
+      "name": "中风险中等金额合同",
+      "change_type": "update",
+      "current_version": 2,
+      "new_version": 3,
+      "field_diff": {
+        "priority": { "old": 20, "new": 25 },
+        "description": { "old": "旧描述", "new": "新描述" }
+      },
+      "validation_errors": [],
+      "conflict_details": null,
+      "should_audit": true
+    },
+    {
+      "index": 2,
+      "name": "低风险小额合同",
+      "change_type": "no_change",
+      "current_version": 1,
+      "new_version": 2,
+      "field_diff": {},
+      "validation_errors": [],
+      "conflict_details": null,
+      "should_audit": false
+    }
+  ],
+  "warnings": []
+}
+```
+
+**优先级冲突响应示例**:
+```json
+{
+  "preview": true,
+  "can_import": true,
+  "summary": {
+    "create": 0,
+    "update": 0,
+    "no_change": 0,
+    "priority_conflict": 1,
+    "validation_failed": 0,
+    "duplicate_name": 0
+  },
+  "total": 1,
+  "rules": [
+    {
+      "index": 0,
+      "name": "冲突测试规则",
+      "change_type": "priority_conflict",
+      "current_version": null,
+      "new_version": 1,
+      "field_diff": {},
+      "validation_errors": [],
+      "conflict_details": {
+        "type": "priority_conflict",
+        "conflicting_rule_name": "高风险大额合同",
+        "conflicting_rule_id": "rule-uuid",
+        "conflicting_priority": 50,
+        "message": "优先级 50 与现有规则 \"高风险大额合同\" 冲突，导入后将按版本号排序"
+      },
+      "should_audit": true
     }
   ],
   "warnings": [
-    "规则[0] \"中风险中等金额合同\": 优先级 50 与现有规则 \"高风险大额合同\" 冲突"
+    "优先级 50 与现有规则 \"高风险大额合同\" 冲突，导入后将按版本号排序"
+  ]
+}
+```
+
+**正式导入响应示例**:
+```json
+{
+  "success": true,
+  "batch_id": "batch-uuid",
+  "imported": 2,
+  "skipped": 1,
+  "total": 3,
+  "summary": {
+    "create": 1,
+    "update": 1,
+    "no_change": 1,
+    "priority_conflict": 0,
+    "validation_failed": 0,
+    "duplicate_name": 0
+  },
+  "rules": [
+    {
+      "index": 0,
+      "name": "新规则",
+      "change_type": "create",
+      "current_version": null,
+      "new_version": 1,
+      "field_diff": {},
+      "validation_errors": [],
+      "conflict_details": null,
+      "should_audit": true
+    }
   ],
-  "info": []
+  "results": [
+    {
+      "name": "新规则",
+      "version": 1,
+      "id": "rule-uuid",
+      "change_type": "create",
+      "previous_active_version": null,
+      "field_diff": {}
+    },
+    {
+      "name": "低风险小额合同",
+      "version": 1,
+      "change_type": "no_change",
+      "skipped": true,
+      "reason": "无变化，未创建新版本"
+    }
+  ],
+  "warnings": []
 }
 ```
 
@@ -489,6 +618,9 @@ curl -H "x-user-id: <admin用户ID>" -H "Content-Type: application/json" \
 - ✅ 优先级冲突检测
 - ✅ 重名规则检测
 - ✅ 步骤配置完整性校验
+
+**配置项**:
+- `RULE_IMPORT_AUDIT_NO_CHANGE=false` - 是否为无变化规则写入审计日志（默认不写，但仍在预检摘要中展示）
 
 #### 9. 获取规则版本列表
 ```http
@@ -543,10 +675,16 @@ GET /api/users/audit-logs?limit=50
 x-user-id: <admin用户ID>
 ```
 
-**curl 示例**:
+**curl 示例** (bash / Git Bash / WSL):
 ```bash
 curl -H "x-user-id: <admin用户ID>" \
   "http://localhost:3000/api/users/audit-logs?limit=100"
+```
+
+**PowerShell 示例** (Windows 原生):
+```powershell
+$headers = @{ "x-user-id" = "<admin用户ID>" }
+Invoke-WebRequest -Uri "http://localhost:3000/api/users/audit-logs?limit=100" -Headers $headers
 ```
 
 #### 2. 持久性检查 (需 admin 角色)
@@ -555,10 +693,16 @@ GET /api/users/persistence-check
 x-user-id: <admin用户ID>
 ```
 
-**curl 示例**:
+**curl 示例** (bash / Git Bash / WSL):
 ```bash
 curl -H "x-user-id: <admin用户ID>" \
   http://localhost:3000/api/users/persistence-check
+```
+
+**PowerShell 示例** (Windows 原生):
+```powershell
+$headers = @{ "x-user-id" = "<admin用户ID>" }
+Invoke-WebRequest -Uri "http://localhost:3000/api/users/persistence-check" -Headers $headers
 ```
 
 **响应示例**:
