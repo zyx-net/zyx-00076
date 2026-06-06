@@ -137,11 +137,6 @@ router.post('/:id/remind', requireAdmin, (req, res) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    const deadline = ApprovalDeadline.findById(req.params.id);
-    if (!deadline) {
-      return res.status(404).json({ error: '时限记录不存在' });
-    }
-
     const result = DeadlineService.sendManualReminder(
       req.params.id, 
       req.user.id, 

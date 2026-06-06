@@ -1,161 +1,161 @@
 {
   "users": [
     {
-      "id": "619b0c64-ebcf-4c24-b13a-1293e4440496",
+      "id": "70f161d0-b6b2-4294-b205-4c1c668f7496",
       "username": "admin",
       "name": "系统管理员",
       "email": "admin@company.com",
       "roles": "[\"admin\"]",
       "department_id": null,
       "is_active": 1,
-      "created_at": 1780747785491
+      "created_at": 1780750404178
     },
     {
-      "id": "a39d02bd-7926-4e8d-bf8d-8a236d2a40c7",
+      "id": "a439b25b-f46a-41b2-bf58-3a3698a15176",
       "username": "zhangsan",
       "name": "张三",
       "email": "zhangsan@company.com",
       "roles": "[\"applicant\",\"department_manager\"]",
-      "department_id": "25a70c2c-4f16-485d-8072-6f06f55068d5",
+      "department_id": "c110aec7-3942-45d5-9425-a054fbc5de6d",
       "is_active": 1,
-      "created_at": 1780747785492
+      "created_at": 1780750404179
     },
     {
-      "id": "2127ae50-0fbe-4844-af47-4c2c5d053b5b",
+      "id": "83dbf744-1ef4-4eee-8cae-53c53779e592",
       "username": "lisi",
       "name": "李四",
       "email": "lisi@company.com",
       "roles": "[\"applicant\"]",
-      "department_id": "45976a18-3018-4235-a257-4e86980aafc8",
+      "department_id": "6eef129f-678b-4c75-bf74-f0a300fde0bb",
       "is_active": 1,
-      "created_at": 1780747785493
+      "created_at": 1780750404180
     },
     {
-      "id": "98fd63a5-381f-4d26-935f-edd472af2e33",
+      "id": "61185de4-8012-4bf1-bb0e-add43eeaf920",
       "username": "wangwu",
       "name": "王五",
       "email": "wangwu@company.com",
       "roles": "[\"finance\"]",
-      "department_id": "a6454f69-a864-4d61-bf4a-f47305f1146e",
+      "department_id": "91987bf1-4b58-414b-9984-fc7cdc01a98c",
       "is_active": 1,
-      "created_at": 1780747785494
+      "created_at": 1780750404181
     },
     {
-      "id": "7ea5f305-3cb9-4c88-bf2b-12e3f95ec3ac",
+      "id": "32aa178e-207a-4b22-bd84-be6825007300",
       "username": "zhaoliu",
       "name": "赵六",
       "email": "zhaoliu@company.com",
       "roles": "[\"legal\"]",
-      "department_id": "8881927e-14c0-4ae7-b0b0-fbd01065795a",
+      "department_id": "913f2b34-891e-49b1-8637-c69d38b75a3b",
       "is_active": 1,
-      "created_at": 1780747785495
+      "created_at": 1780750404182
     },
     {
-      "id": "dfbeaee4-834d-49a1-9561-01c39fec8969",
+      "id": "b475fae6-e876-4ddf-8611-768f0758b4f6",
       "username": "sunqi",
       "name": "孙七",
       "email": "sunqi@company.com",
       "roles": "[\"risk\"]",
-      "department_id": "cc3e0081-e600-4d77-aa65-307f3501d29d",
+      "department_id": "c569f209-6dc1-47fc-9780-37001a8534be",
       "is_active": 1,
-      "created_at": 1780747785496
+      "created_at": 1780750404183
     },
     {
-      "id": "cd78351b-d4ea-41fb-b75b-46ce09dbaf53",
+      "id": "ed38920d-8b62-4689-8a40-b46e27297252",
       "username": "zhouba",
       "name": "周八",
       "email": "zhouba@company.com",
       "roles": "[\"ceo\",\"admin\"]",
       "department_id": null,
       "is_active": 1,
-      "created_at": 1780747785497
+      "created_at": 1780750404184
     },
     {
-      "id": "f25d877c-79f3-4feb-b657-e139f49a5bab",
+      "id": "d4b10322-7fa5-4c1f-97e0-e498636f0130",
       "username": "wujiu",
       "name": "吴九",
       "email": "wujiu@company.com",
       "roles": "[\"finance\",\"risk\"]",
-      "department_id": "a6454f69-a864-4d61-bf4a-f47305f1146e",
+      "department_id": "91987bf1-4b58-414b-9984-fc7cdc01a98c",
       "is_active": 1,
-      "created_at": 1780747785498
+      "created_at": 1780750404184
     },
     {
-      "id": "8b1ca661-ffd5-45f6-b92a-f90087fe5ffa",
+      "id": "19e38978-63db-483a-9b5e-6c672ac751d6",
       "username": "zhengshi",
       "name": "郑十",
       "email": "zhengshi@company.com",
       "roles": "[\"legal\"]",
-      "department_id": "8881927e-14c0-4ae7-b0b0-fbd01065795a",
+      "department_id": "913f2b34-891e-49b1-8637-c69d38b75a3b",
       "is_active": 1,
-      "created_at": 1780747785498
+      "created_at": 1780750404185
     },
     {
-      "id": "e6325d13-c0bd-41b5-b363-88bfec7bf927",
+      "id": "0c4f1553-a01f-4893-9c41-a89bbdb35db9",
       "username": "qianshiyi",
       "name": "钱十一",
       "email": "qianshiyi@company.com",
       "roles": "[\"department_manager\"]",
-      "department_id": "25a70c2c-4f16-485d-8072-6f06f55068d5",
+      "department_id": "c110aec7-3942-45d5-9425-a054fbc5de6d",
       "is_active": 1,
-      "created_at": 1780747785499
+      "created_at": 1780750404186
     }
   ],
   "departments": [
     {
-      "id": "25a70c2c-4f16-485d-8072-6f06f55068d5",
+      "id": "c110aec7-3942-45d5-9425-a054fbc5de6d",
       "name": "技术部",
       "code": "TECH",
-      "created_at": 1780747785484
+      "created_at": 1780750404171
     },
     {
-      "id": "45976a18-3018-4235-a257-4e86980aafc8",
+      "id": "6eef129f-678b-4c75-bf74-f0a300fde0bb",
       "name": "销售部",
       "code": "SALES",
-      "created_at": 1780747785486
+      "created_at": 1780750404173
     },
     {
-      "id": "a6454f69-a864-4d61-bf4a-f47305f1146e",
+      "id": "91987bf1-4b58-414b-9984-fc7cdc01a98c",
       "name": "财务部",
       "code": "FIN",
-      "created_at": 1780747785486
+      "created_at": 1780750404174
     },
     {
-      "id": "8881927e-14c0-4ae7-b0b0-fbd01065795a",
+      "id": "913f2b34-891e-49b1-8637-c69d38b75a3b",
       "name": "法务部",
       "code": "LEGAL",
-      "created_at": 1780747785487
+      "created_at": 1780750404174
     },
     {
-      "id": "8aa7d3ac-4829-4cd9-8573-324f4cd9637a",
+      "id": "331f3b7c-8266-45e7-881d-4484af89e5e9",
       "name": "人力资源部",
       "code": "HR",
-      "created_at": 1780747785488
+      "created_at": 1780750404175
     },
     {
-      "id": "cc3e0081-e600-4d77-aa65-307f3501d29d",
+      "id": "c569f209-6dc1-47fc-9780-37001a8534be",
       "name": "风险管理部",
       "code": "RISK",
-      "created_at": 1780747785490
+      "created_at": 1780750404176
     }
   ],
   "approval_rules": [
     {
-      "id": "f90813c9-4133-4d59-b09b-ce56910b6801",
+      "id": "a7085eb6-923f-41e4-89d2-6c332d74c485",
       "name": "低风险小额合同",
       "version": 1,
       "description": "金额 < 10万，低风险，技术部/销售部的合同",
-      "conditions": "{\"type\":\"composite\",\"logic\":\"AND\",\"conditions\":[{\"type\":\"simple\",\"field\":\"amount\",\"operator\":\"less_than\",\"value\":100000},{\"type\":\"simple\",\"field\":\"risk_level\",\"operator\":\"equals\",\"value\":\"low\"},{\"type\":\"simple\",\"field\":\"department_id\",\"operator\":\"in\",\"values\":[\"25a70c2c-4f16-485d-8072-6f06f55068d5\",\"45976a18-3018-4235-a257-4e86980aafc8\"]}]}",
+      "conditions": "{\"type\":\"composite\",\"logic\":\"AND\",\"conditions\":[{\"type\":\"simple\",\"field\":\"amount\",\"operator\":\"less_than\",\"value\":100000},{\"type\":\"simple\",\"field\":\"risk_level\",\"operator\":\"equals\",\"value\":\"low\"},{\"type\":\"simple\",\"field\":\"department_id\",\"operator\":\"in\",\"values\":[\"c110aec7-3942-45d5-9425-a054fbc5de6d\",\"6eef129f-678b-4c75-bf74-f0a300fde0bb\"]}]}",
       "steps": "[{\"name\":\"部门经理审批\",\"type\":\"single\",\"required_roles\":[\"department_manager\"]},{\"name\":\"财务审核\",\"type\":\"single\",\"required_roles\":[\"finance\"]}]",
       "priority": 10,
       "is_active": 1,
-      "created_by": "619b0c64-ebcf-4c24-b13a-1293e4440496",
-      "created_at": 1780747785501,
+      "created_by": "70f161d0-b6b2-4294-b205-4c1c668f7496",
+      "created_at": 1780750404187,
       "effective_from": null,
       "effective_to": null
     },
     {
-      "id": "08772be0-267a-4cb8-8be2-ef4339a2ffe2",
+      "id": "34458fbf-17ee-4483-bfcd-80bfa008c357",
       "name": "中风险中等金额合同",
       "version": 1,
       "description": "10万 ≤ 金额 < 100万，中风险，所有部门",
@@ -163,13 +163,13 @@
       "steps": "[{\"name\":\"部门经理审批\",\"type\":\"single\",\"required_roles\":[\"department_manager\"]},{\"name\":\"财务审核\",\"type\":\"single\",\"required_roles\":[\"finance\"]},{\"name\":\"法务审核\",\"type\":\"single\",\"required_roles\":[\"legal\"]}]",
       "priority": 20,
       "is_active": 1,
-      "created_by": "619b0c64-ebcf-4c24-b13a-1293e4440496",
-      "created_at": 1780747785502,
+      "created_by": "70f161d0-b6b2-4294-b205-4c1c668f7496",
+      "created_at": 1780750404188,
       "effective_from": null,
       "effective_to": null
     },
     {
-      "id": "ca5848eb-3784-4367-93f6-216dc5502dc8",
+      "id": "e764d635-7654-43c9-ade8-9e06657effd1",
       "name": "高风险大额合同",
       "version": 1,
       "description": "金额 ≥ 100万 或 高风险，需要会签",
@@ -177,160 +177,88 @@
       "steps": "[{\"name\":\"部门经理审批\",\"type\":\"single\",\"required_roles\":[\"department_manager\"]},{\"name\":\"财务和风险会签 (需2人)\",\"type\":\"countersign\",\"required_roles\":[\"finance\",\"risk\"],\"required_signatures\":2},{\"name\":\"法务双人会签 (需2人)\",\"type\":\"countersign\",\"required_roles\":[\"legal\"],\"required_signatures\":2},{\"name\":\"CEO最终审批\",\"type\":\"single\",\"required_roles\":[\"ceo\"]}]",
       "priority": 50,
       "is_active": 1,
-      "created_by": "619b0c64-ebcf-4c24-b13a-1293e4440496",
-      "created_at": 1780747785503,
+      "created_by": "70f161d0-b6b2-4294-b205-4c1c668f7496",
+      "created_at": 1780750404190,
       "effective_from": null,
       "effective_to": null
     },
     {
-      "id": "a212c3d9-95b3-4214-a298-d26ca626bde4",
+      "id": "eb90d969-93e1-4e39-8a98-1388144b237b",
       "name": "销售部特殊合同",
       "version": 1,
       "description": "销售部所有合同额外增加风控审核",
-      "conditions": "{\"type\":\"composite\",\"logic\":\"AND\",\"conditions\":[{\"type\":\"simple\",\"field\":\"department_id\",\"operator\":\"equals\",\"value\":\"45976a18-3018-4235-a257-4e86980aafc8\"},{\"type\":\"simple\",\"field\":\"amount\",\"operator\":\"greater_than_or_equal\",\"value\":500000}]}",
+      "conditions": "{\"type\":\"composite\",\"logic\":\"AND\",\"conditions\":[{\"type\":\"simple\",\"field\":\"department_id\",\"operator\":\"equals\",\"value\":\"6eef129f-678b-4c75-bf74-f0a300fde0bb\"},{\"type\":\"simple\",\"field\":\"amount\",\"operator\":\"greater_than_or_equal\",\"value\":500000}]}",
       "steps": "[{\"name\":\"部门经理审批\",\"type\":\"single\",\"required_roles\":[\"department_manager\"]},{\"name\":\"风控初审\",\"type\":\"single\",\"required_roles\":[\"risk\"]},{\"name\":\"财务审核\",\"type\":\"single\",\"required_roles\":[\"finance\"]},{\"name\":\"法务审核\",\"type\":\"single\",\"required_roles\":[\"legal\"]}]",
       "priority": 30,
       "is_active": 1,
-      "created_by": "619b0c64-ebcf-4c24-b13a-1293e4440496",
-      "created_at": 1780747785505,
+      "created_by": "70f161d0-b6b2-4294-b205-4c1c668f7496",
+      "created_at": 1780750404191,
       "effective_from": null,
       "effective_to": null
     }
   ],
   "contracts": [
     {
-      "id": "80ceb005-3c64-447a-ba79-eeb37abb804b",
-      "contract_no": "RVW-1780748039491",
-      "title": "Reviewer SLA contract",
+      "id": "3d4c39dd-047a-4525-ab13-bf321d40bc03",
+      "contract_no": "HT-FULL-001",
+      "title": "全流程时限测试合同",
       "amount": 500000,
       "currency": "CNY",
-      "department_id": "25a70c2c-4f16-485d-8072-6f06f55068d5",
+      "department_id": "c110aec7-3942-45d5-9425-a054fbc5de6d",
       "risk_level": "medium",
-      "content": "reviewer generated contract",
-      "applicant_id": "a39d02bd-7926-4e8d-bf8d-8a236d2a40c7",
+      "content": "全流程测试",
+      "applicant_id": "a439b25b-f46a-41b2-bf58-3a3698a15176",
       "status": "approving",
-      "created_at": 1780748039497,
-      "updated_at": 1780748039513,
-      "rule_id": "08772be0-267a-4cb8-8be2-ef4339a2ffe2",
+      "created_at": 1780750404215,
+      "updated_at": 1780750404233,
+      "rule_id": "34458fbf-17ee-4483-bfcd-80bfa008c357",
       "rule_version": 1,
       "rule_hit_reason": "[\"  amount between [100000,999999.99]: ✓ (actual: 500000)\",\"  risk_level equals medium: ✓ (actual: medium)\",\"AND: ✓\"]",
-      "current_step_id": "96ffad5a-2521-457d-9504-608c44d35b79"
-    },
-    {
-      "id": "acd6c895-cc8a-46da-8e2f-036e6603c80f",
-      "contract_no": "RVW2-1780748112355",
-      "title": "Reviewer duplicate reminder contract",
-      "amount": 500000,
-      "currency": "CNY",
-      "department_id": "25a70c2c-4f16-485d-8072-6f06f55068d5",
-      "risk_level": "medium",
-      "content": "reviewer state test",
-      "applicant_id": "a39d02bd-7926-4e8d-bf8d-8a236d2a40c7",
-      "status": "approving",
-      "created_at": 1780748112372,
-      "updated_at": 1780748112428,
-      "rule_id": "08772be0-267a-4cb8-8be2-ef4339a2ffe2",
-      "rule_version": 1,
-      "rule_hit_reason": "[\"  amount between [100000,999999.99]: ✓ (actual: 500000)\",\"  risk_level equals medium: ✓ (actual: medium)\",\"AND: ✓\"]",
-      "current_step_id": "217bea07-d2bd-4add-853c-6e173b0c6147"
+      "current_step_id": "b9c8fc62-48bb-43b3-875c-e83be9586d45"
     }
   ],
   "contract_attachments": [
     {
-      "id": "9021e1d9-271e-44d5-b6d7-734adc05151f",
-      "contract_id": "80ceb005-3c64-447a-ba79-eeb37abb804b",
-      "file_name": "reviewer-contract.pdf",
+      "id": "18aa6b6c-51ec-4736-af7f-3d8048e380de",
+      "contract_id": "3d4c39dd-047a-4525-ab13-bf321d40bc03",
+      "file_name": "test.pdf",
       "file_type": "application/pdf",
-      "file_size": 1234,
+      "file_size": 10000,
       "file_path": null,
-      "uploaded_by": "a39d02bd-7926-4e8d-bf8d-8a236d2a40c7",
-      "uploaded_at": 1780748039498,
+      "uploaded_by": "a439b25b-f46a-41b2-bf58-3a3698a15176",
+      "uploaded_at": 1780750404216,
       "is_required": 1
-    },
-    {
-      "id": "0d90d4b0-c149-47bb-aac2-e43ead8749cb",
-      "contract_id": "acd6c895-cc8a-46da-8e2f-036e6603c80f",
-      "file_name": "state.pdf",
-      "file_type": "application/pdf",
-      "file_size": 100,
-      "file_path": null,
-      "uploaded_by": "a39d02bd-7926-4e8d-bf8d-8a236d2a40c7",
-      "uploaded_at": 1780748112374,
-      "is_required": 1
-    },
-    {
-      "id": "a819d261-c369-4d6a-a08d-b9f942fd749e",
-      "contract_id": "acd6c895-cc8a-46da-8e2f-036e6603c80f",
-      "file_name": "extra.pdf",
-      "file_type": "application/pdf",
-      "file_size": 50,
-      "file_path": null,
-      "uploaded_by": "a39d02bd-7926-4e8d-bf8d-8a236d2a40c7",
-      "uploaded_at": 1780748112425,
-      "is_required": 0
     }
   ],
   "approval_steps": [
     {
-      "id": "96ffad5a-2521-457d-9504-608c44d35b79",
-      "contract_id": "80ceb005-3c64-447a-ba79-eeb37abb804b",
+      "id": "117ff3e1-6443-4e45-a4f3-6182d1eb9c13",
+      "contract_id": "3d4c39dd-047a-4525-ab13-bf321d40bc03",
       "step_order": 1,
       "step_name": "部门经理审批",
       "step_type": "single",
       "required_roles": "[\"department_manager\"]",
       "required_signatures": 1,
       "assigned_to": null,
-      "status": "in_progress",
-      "started_at": 1780748039508
+      "status": "completed",
+      "started_at": 1780750404222,
+      "completed_at": 1780750404231
     },
     {
-      "id": "12acc0a2-1ffd-4dd9-81f9-b007c16268cc",
-      "contract_id": "80ceb005-3c64-447a-ba79-eeb37abb804b",
+      "id": "b9c8fc62-48bb-43b3-875c-e83be9586d45",
+      "contract_id": "3d4c39dd-047a-4525-ab13-bf321d40bc03",
       "step_order": 2,
       "step_name": "财务审核",
       "step_type": "single",
       "required_roles": "[\"finance\"]",
       "required_signatures": 1,
       "assigned_to": null,
-      "status": "pending"
-    },
-    {
-      "id": "c03c0deb-0d23-41a9-ade1-8f52093f0bfe",
-      "contract_id": "80ceb005-3c64-447a-ba79-eeb37abb804b",
-      "step_order": 3,
-      "step_name": "法务审核",
-      "step_type": "single",
-      "required_roles": "[\"legal\"]",
-      "required_signatures": 1,
-      "assigned_to": null,
-      "status": "pending"
-    },
-    {
-      "id": "217bea07-d2bd-4add-853c-6e173b0c6147",
-      "contract_id": "acd6c895-cc8a-46da-8e2f-036e6603c80f",
-      "step_order": 1,
-      "step_name": "部门经理审批",
-      "step_type": "single",
-      "required_roles": "[\"department_manager\"]",
-      "required_signatures": 1,
-      "assigned_to": null,
       "status": "in_progress",
-      "started_at": 1780748112385
+      "started_at": 1780750404232
     },
     {
-      "id": "15807749-b5b1-415e-b13f-36af48c7269e",
-      "contract_id": "acd6c895-cc8a-46da-8e2f-036e6603c80f",
-      "step_order": 2,
-      "step_name": "财务审核",
-      "step_type": "single",
-      "required_roles": "[\"finance\"]",
-      "required_signatures": 1,
-      "assigned_to": null,
-      "status": "pending"
-    },
-    {
-      "id": "259b1784-50d8-4f23-8210-25628f0d0548",
-      "contract_id": "acd6c895-cc8a-46da-8e2f-036e6603c80f",
+      "id": "cc6c2096-9bc9-4e41-8703-3d404d192ee8",
+      "contract_id": "3d4c39dd-047a-4525-ab13-bf321d40bc03",
       "step_order": 3,
       "step_name": "法务审核",
       "step_type": "single",
@@ -342,93 +270,43 @@
   ],
   "approval_actions": [
     {
-      "id": "08a8bb93-f860-49b1-a070-89981bc10edc",
-      "contract_id": "acd6c895-cc8a-46da-8e2f-036e6603c80f",
-      "step_id": "217bea07-d2bd-4add-853c-6e173b0c6147",
-      "approver_id": "e6325d13-c0bd-41b5-b363-88bfec7bf927",
-      "action": "request_supplement",
-      "comment": "review needs supplement",
-      "attachments": "[]",
-      "created_at": 1780748112415
-    },
-    {
-      "id": "cf7635ae-bba8-413d-b174-7be26914df73",
-      "contract_id": "acd6c895-cc8a-46da-8e2f-036e6603c80f",
-      "step_id": "217bea07-d2bd-4add-853c-6e173b0c6147",
-      "approver_id": "a39d02bd-7926-4e8d-bf8d-8a236d2a40c7",
-      "action": "submit_supplement",
-      "comment": "review supplement submitted",
-      "attachments": "[\"extra.pdf\"]",
-      "created_at": 1780748112427
+      "id": "016f190b-cc23-4b2a-b7d1-3d3fa8ef3521",
+      "contract_id": "3d4c39dd-047a-4525-ab13-bf321d40bc03",
+      "step_id": "117ff3e1-6443-4e45-a4f3-6182d1eb9c13",
+      "approver_id": "0c4f1553-a01f-4893-9c41-a89bbdb35db9",
+      "action": "approve",
+      "comment": "同意",
+      "attachments": null,
+      "created_at": 1780750404231
     }
   ],
   "audit_logs": [
     {
-      "id": "89e31f88-1fff-4f87-9ff3-8130569da2cd",
-      "contract_id": "80ceb005-3c64-447a-ba79-eeb37abb804b",
-      "user_id": "a39d02bd-7926-4e8d-bf8d-8a236d2a40c7",
-      "action": "create",
-      "old_value": null,
-      "new_value": "{\"contract_no\":\"RVW-1780748039491\",\"title\":\"Reviewer SLA contract\"}",
-      "ip_address": "::ffff:127.0.0.1",
-      "created_at": 1780748039500
-    },
-    {
-      "id": "d23c7569-eb0e-4fdf-8df2-1b94003104a3",
-      "contract_id": "80ceb005-3c64-447a-ba79-eeb37abb804b",
-      "user_id": "a39d02bd-7926-4e8d-bf8d-8a236d2a40c7",
+      "id": "54a6f6b0-7322-43c0-a163-990c2b92ba8e",
+      "contract_id": "3d4c39dd-047a-4525-ab13-bf321d40bc03",
+      "user_id": "a439b25b-f46a-41b2-bf58-3a3698a15176",
       "action": "submit",
       "old_value": "{\"status\":\"draft\"}",
-      "new_value": "{\"status\":\"approving\",\"rule_id\":\"08772be0-267a-4cb8-8be2-ef4339a2ffe2\",\"rule_name\":\"中风险中等金额合同\",\"rule_version\":1}",
-      "ip_address": "::ffff:127.0.0.1",
-      "created_at": 1780748039514
+      "new_value": "{\"status\":\"approving\",\"rule_id\":\"34458fbf-17ee-4483-bfcd-80bfa008c357\",\"rule_name\":\"中风险中等金额合同\",\"rule_version\":1}",
+      "ip_address": "127.0.0.1",
+      "created_at": 1780750404226
     },
     {
-      "id": "79e043b0-2ff3-494d-a6b6-ae084d19197e",
-      "contract_id": "acd6c895-cc8a-46da-8e2f-036e6603c80f",
-      "user_id": "a39d02bd-7926-4e8d-bf8d-8a236d2a40c7",
-      "action": "create",
-      "old_value": null,
-      "new_value": "{\"contract_no\":\"RVW2-1780748112355\",\"title\":\"Reviewer duplicate reminder contract\"}",
-      "ip_address": "::ffff:127.0.0.1",
-      "created_at": 1780748112375
-    },
-    {
-      "id": "44b04959-77da-4dbf-a08d-4ef7fca2ab9a",
-      "contract_id": "acd6c895-cc8a-46da-8e2f-036e6603c80f",
-      "user_id": "a39d02bd-7926-4e8d-bf8d-8a236d2a40c7",
-      "action": "submit",
-      "old_value": "{\"status\":\"draft\"}",
-      "new_value": "{\"status\":\"approving\",\"rule_id\":\"08772be0-267a-4cb8-8be2-ef4339a2ffe2\",\"rule_name\":\"中风险中等金额合同\",\"rule_version\":1}",
-      "ip_address": "::ffff:127.0.0.1",
-      "created_at": 1780748112393
-    },
-    {
-      "id": "37b87f2e-83e2-4d7e-9ad5-e4524de8485a",
-      "contract_id": "acd6c895-cc8a-46da-8e2f-036e6603c80f",
-      "user_id": "e6325d13-c0bd-41b5-b363-88bfec7bf927",
-      "action": "request_supplement",
-      "old_value": "{\"status\":\"approving\"}",
-      "new_value": "{\"status\":\"supplement_requested\",\"step_name\":\"部门经理审批\",\"comment\":\"review needs supplement\"}",
-      "ip_address": "::ffff:127.0.0.1",
-      "created_at": 1780748112417
-    },
-    {
-      "id": "da074740-d68e-4c59-bce1-c1a76fb30e4b",
-      "contract_id": "acd6c895-cc8a-46da-8e2f-036e6603c80f",
-      "user_id": "a39d02bd-7926-4e8d-bf8d-8a236d2a40c7",
-      "action": "submit_supplement",
-      "old_value": "{\"status\":\"supplement_requested\"}",
-      "new_value": "{\"status\":\"approving\",\"attachments_count\":1,\"step_name\":\"部门经理审批\"}",
-      "ip_address": "::ffff:127.0.0.1",
-      "created_at": 1780748112429
+      "id": "2396e3ad-20bc-40d8-86a5-9275a6d2ea14",
+      "contract_id": "3d4c39dd-047a-4525-ab13-bf321d40bc03",
+      "user_id": "0c4f1553-a01f-4893-9c41-a89bbdb35db9",
+      "action": "approve",
+      "old_value": "{\"step_id\":\"117ff3e1-6443-4e45-a4f3-6182d1eb9c13\",\"step_name\":\"部门经理审批\"}",
+      "new_value": "{\"step_id\":\"b9c8fc62-48bb-43b3-875c-e83be9586d45\",\"step_name\":\"财务审核\"}",
+      "ip_address": "127.0.0.1",
+      "created_at": 1780750404234
     }
   ],
   "archives": [],
   "import_batches": [],
   "sla_configs": [
     {
-      "id": "67a1ff2d-05e3-4d11-8a76-f8a1326e2f24",
+      "id": "facbd775-388c-4fa5-b554-252866a6ec4a",
       "name": "高风险大额合同SLA",
       "risk_level": "high",
       "department_id": null,
@@ -442,12 +320,12 @@
       "escalation_roles": "[\"ceo\",\"admin\"]",
       "priority": 100,
       "is_active": 1,
-      "created_by": "619b0c64-ebcf-4c24-b13a-1293e4440496",
-      "created_at": 1780747785506,
-      "updated_at": 1780747785506
+      "created_by": "70f161d0-b6b2-4294-b205-4c1c668f7496",
+      "created_at": 1780750404193,
+      "updated_at": 1780750404193
     },
     {
-      "id": "581e2fde-b147-48f8-8a18-33f64ae6b1b7",
+      "id": "b43ce04d-2c14-4e74-91f4-babf41532649",
       "name": "中风险合同SLA",
       "risk_level": "medium",
       "department_id": null,
@@ -461,12 +339,12 @@
       "escalation_roles": "[\"admin\"]",
       "priority": 50,
       "is_active": 1,
-      "created_by": "619b0c64-ebcf-4c24-b13a-1293e4440496",
-      "created_at": 1780747785507,
-      "updated_at": 1780747785507
+      "created_by": "70f161d0-b6b2-4294-b205-4c1c668f7496",
+      "created_at": 1780750404195,
+      "updated_at": 1780750404195
     },
     {
-      "id": "34a07573-8c97-476d-a18c-2b2523396d68",
+      "id": "30f9da7b-901d-469d-9c98-133edf3e85b8",
       "name": "低风险小额合同SLA",
       "risk_level": "low",
       "department_id": null,
@@ -480,15 +358,15 @@
       "escalation_roles": null,
       "priority": 20,
       "is_active": 1,
-      "created_by": "619b0c64-ebcf-4c24-b13a-1293e4440496",
-      "created_at": 1780747785508,
-      "updated_at": 1780747785508
+      "created_by": "70f161d0-b6b2-4294-b205-4c1c668f7496",
+      "created_at": 1780750404196,
+      "updated_at": 1780750404196
     },
     {
-      "id": "b7fe8eb0-31c7-40b9-b83a-ef8eb5d7778a",
+      "id": "a41ae474-b337-4300-b575-786e971bec6f",
       "name": "技术部合同SLA",
       "risk_level": null,
-      "department_id": "25a70c2c-4f16-485d-8072-6f06f55068d5",
+      "department_id": "c110aec7-3942-45d5-9425-a054fbc5de6d",
       "min_amount": null,
       "max_amount": null,
       "step_name": null,
@@ -499,15 +377,15 @@
       "escalation_roles": null,
       "priority": 30,
       "is_active": 1,
-      "created_by": "619b0c64-ebcf-4c24-b13a-1293e4440496",
-      "created_at": 1780747785509,
-      "updated_at": 1780747785509
+      "created_by": "70f161d0-b6b2-4294-b205-4c1c668f7496",
+      "created_at": 1780750404197,
+      "updated_at": 1780750404197
     },
     {
-      "id": "75c7fa0a-efa9-44fa-8898-67dd12210f64",
+      "id": "94423bce-9e29-4860-9ef7-c78d4cb65a5d",
       "name": "销售部合同SLA",
       "risk_level": null,
-      "department_id": "45976a18-3018-4235-a257-4e86980aafc8",
+      "department_id": "6eef129f-678b-4c75-bf74-f0a300fde0bb",
       "min_amount": null,
       "max_amount": null,
       "step_name": null,
@@ -518,12 +396,12 @@
       "escalation_roles": null,
       "priority": 30,
       "is_active": 1,
-      "created_by": "619b0c64-ebcf-4c24-b13a-1293e4440496",
-      "created_at": 1780747785510,
-      "updated_at": 1780747785510
+      "created_by": "70f161d0-b6b2-4294-b205-4c1c668f7496",
+      "created_at": 1780750404198,
+      "updated_at": 1780750404198
     },
     {
-      "id": "013aa7da-5e3a-41fb-bdb5-5f1c1cd31b46",
+      "id": "c5d5c015-a608-4fb9-a56b-abea34dca282",
       "name": "默认通用SLA",
       "risk_level": null,
       "department_id": null,
@@ -537,76 +415,72 @@
       "escalation_roles": null,
       "priority": 0,
       "is_active": 1,
-      "created_by": "619b0c64-ebcf-4c24-b13a-1293e4440496",
-      "created_at": 1780747785511,
-      "updated_at": 1780747785511
+      "created_by": "70f161d0-b6b2-4294-b205-4c1c668f7496",
+      "created_at": 1780750404198,
+      "updated_at": 1780750404198
+    },
+    {
+      "id": "c3fc9fe1-9f1f-4510-a1b3-e9ad1fcb1cd7",
+      "name": "全流程测试SLA",
+      "risk_level": null,
+      "department_id": null,
+      "min_amount": null,
+      "max_amount": null,
+      "step_name": null,
+      "deadline_hours": 24,
+      "first_reminder_hours": 12,
+      "second_reminder_hours": 18,
+      "escalation_hours": 30,
+      "escalation_roles": "[\"admin\"]",
+      "priority": 200,
+      "is_active": 1,
+      "created_by": "70f161d0-b6b2-4294-b205-4c1c668f7496",
+      "created_at": 1780750404214,
+      "updated_at": 1780750404214
     }
   ],
   "approval_deadlines": [
     {
-      "id": "870547f0-1083-4787-a82f-a134ca253de0",
-      "contract_id": "80ceb005-3c64-447a-ba79-eeb37abb804b",
-      "step_id": "96ffad5a-2521-457d-9504-608c44d35b79",
+      "id": "343a4254-6315-4344-b053-5d0cf50e6ef3",
+      "contract_id": "3d4c39dd-047a-4525-ab13-bf321d40bc03",
+      "step_id": "117ff3e1-6443-4e45-a4f3-6182d1eb9c13",
       "step_name": "部门经理审批",
-      "sla_config_id": "581e2fde-b147-48f8-8a18-33f64ae6b1b7",
+      "sla_config_id": "c3fc9fe1-9f1f-4510-a1b3-e9ad1fcb1cd7",
       "approver_roles": "[\"department_manager\"]",
-      "started_at": 1780748039508,
-      "deadline_hours": 48,
-      "deadline_at": 1780920839508,
-      "first_reminder_at": 1780834439508,
-      "second_reminder_at": 1780877639508,
-      "escalation_at": 1781007239508,
-      "first_reminder_sent": 0,
+      "started_at": 1780750404222,
+      "deadline_hours": 24,
+      "deadline_at": 1780836804222,
+      "first_reminder_at": 1780793604222,
+      "second_reminder_at": 1780815204222,
+      "escalation_at": 1780858404222,
+      "first_reminder_sent": 1,
       "second_reminder_sent": 0,
       "escalation_sent": 0,
-      "status": "paused",
-      "created_at": 1780748039510,
-      "updated_at": 1780748039525,
-      "paused_at": 1780748039525,
-      "paused_by": "619b0c64-ebcf-4c24-b13a-1293e4440496",
-      "pause_reason": "review pause check"
+      "status": "completed",
+      "created_at": 1780750404223,
+      "updated_at": 1780750404235,
+      "closed_at": 1780750404235,
+      "close_reason": "completed"
     },
     {
-      "id": "9fcc0ec7-b8ac-4a9d-af11-f8462121933e",
-      "contract_id": "acd6c895-cc8a-46da-8e2f-036e6603c80f",
-      "step_id": "217bea07-d2bd-4add-853c-6e173b0c6147",
-      "step_name": "部门经理审批",
-      "sla_config_id": "581e2fde-b147-48f8-8a18-33f64ae6b1b7",
-      "approver_roles": "[\"department_manager\"]",
-      "started_at": 1780748112385,
-      "deadline_hours": 48,
-      "deadline_at": 1780920912385,
-      "first_reminder_at": 1780834512385,
-      "second_reminder_at": 1780877712385,
-      "escalation_at": 1781007312385,
-      "first_reminder_sent": 0,
-      "second_reminder_sent": 0,
-      "escalation_sent": 0,
-      "status": "closed",
-      "created_at": 1780748112387,
-      "updated_at": 1780748112419,
-      "closed_at": 1780748112419,
-      "close_reason": "supplement_requested"
-    },
-    {
-      "id": "04727a3f-1167-49c7-aafa-a5fbc4b000ca",
-      "contract_id": "acd6c895-cc8a-46da-8e2f-036e6603c80f",
-      "step_id": "217bea07-d2bd-4add-853c-6e173b0c6147",
-      "step_name": "部门经理审批",
-      "sla_config_id": "581e2fde-b147-48f8-8a18-33f64ae6b1b7",
-      "approver_roles": "[\"department_manager\"]",
-      "started_at": 1780748112385,
-      "deadline_hours": 48,
-      "deadline_at": 1780920912385,
-      "first_reminder_at": 1780834512385,
-      "second_reminder_at": 1780877712385,
-      "escalation_at": 1781007312385,
+      "id": "9cac9ba7-e3e1-46ef-989a-607f594b2b15",
+      "contract_id": "3d4c39dd-047a-4525-ab13-bf321d40bc03",
+      "step_id": "b9c8fc62-48bb-43b3-875c-e83be9586d45",
+      "step_name": "财务审核",
+      "sla_config_id": "c3fc9fe1-9f1f-4510-a1b3-e9ad1fcb1cd7",
+      "approver_roles": "[\"finance\"]",
+      "started_at": 1780750404232,
+      "deadline_hours": 24,
+      "deadline_at": 1780836804232,
+      "first_reminder_at": 1780793604232,
+      "second_reminder_at": 1780815204232,
+      "escalation_at": 1780858404232,
       "first_reminder_sent": 0,
       "second_reminder_sent": 0,
       "escalation_sent": 0,
       "status": "active",
-      "created_at": 1780748112430,
-      "updated_at": 1780748112430
+      "created_at": 1780750404238,
+      "updated_at": 1780750404238
     }
   ],
   "reminder_logs": [
@@ -3301,94 +3175,64 @@
   ],
   "deadline_audit_logs": [
     {
-      "id": "9486694b-11ec-43bb-99e4-d8dfaa9bb1cc",
-      "deadline_id": "870547f0-1083-4787-a82f-a134ca253de0",
-      "contract_id": "80ceb005-3c64-447a-ba79-eeb37abb804b",
-      "step_id": "96ffad5a-2521-457d-9504-608c44d35b79",
+      "id": "71bbb11f-899d-447d-b7ca-c65845afe260",
+      "deadline_id": "343a4254-6315-4344-b053-5d0cf50e6ef3",
+      "contract_id": "3d4c39dd-047a-4525-ab13-bf321d40bc03",
+      "step_id": "117ff3e1-6443-4e45-a4f3-6182d1eb9c13",
       "user_id": null,
       "action": "created",
       "reason": "合同审批步骤启动",
       "old_status": null,
       "new_status": "active",
       "old_value": null,
-      "new_value": "{\"deadline_at\":1780920839508,\"sla_config_id\":\"581e2fde-b147-48f8-8a18-33f64ae6b1b7\"}",
+      "new_value": "{\"deadline_at\":1780836804222,\"sla_config_id\":\"c3fc9fe1-9f1f-4510-a1b3-e9ad1fcb1cd7\"}",
       "ip_address": null,
-      "created_at": 1780748039511
+      "created_at": 1780750404224
     },
     {
-      "id": "9a9314e4-bd9e-42ac-92e7-a63f30120a52",
-      "deadline_id": "870547f0-1083-4787-a82f-a134ca253de0",
-      "contract_id": "80ceb005-3c64-447a-ba79-eeb37abb804b",
-      "step_id": "96ffad5a-2521-457d-9504-608c44d35b79",
-      "user_id": "619b0c64-ebcf-4c24-b13a-1293e4440496",
-      "action": "paused",
-      "reason": "review pause check",
+      "id": "4e4aebc9-7ea1-4082-aba3-c7802b3bcb0f",
+      "deadline_id": "343a4254-6315-4344-b053-5d0cf50e6ef3",
+      "contract_id": "3d4c39dd-047a-4525-ab13-bf321d40bc03",
+      "step_id": "117ff3e1-6443-4e45-a4f3-6182d1eb9c13",
+      "user_id": null,
+      "action": "first_reminder",
+      "reason": "自动催办 - 首次提醒",
       "old_status": "active",
-      "new_status": "paused",
+      "new_status": "active",
+      "old_value": "{\"first_reminder_sent\":false}",
+      "new_value": "{\"first_reminder_sent\":true}",
+      "ip_address": null,
+      "created_at": 1780750404228
+    },
+    {
+      "id": "70b0e903-e747-4b7f-b560-f63aeef52fa3",
+      "deadline_id": "343a4254-6315-4344-b053-5d0cf50e6ef3",
+      "contract_id": "3d4c39dd-047a-4525-ab13-bf321d40bc03",
+      "step_id": "117ff3e1-6443-4e45-a4f3-6182d1eb9c13",
+      "user_id": "0c4f1553-a01f-4893-9c41-a89bbdb35db9",
+      "action": "completed",
+      "reason": "审批步骤完成",
+      "old_status": "active",
+      "new_status": "completed",
       "old_value": null,
       "new_value": null,
-      "ip_address": "::ffff:127.0.0.1",
-      "created_at": 1780748039526
+      "ip_address": "127.0.0.1",
+      "created_at": 1780750404236
     },
     {
-      "id": "924038ec-8227-4eed-a1e2-cf6c150ec254",
-      "deadline_id": "9fcc0ec7-b8ac-4a9d-af11-f8462121933e",
-      "contract_id": "acd6c895-cc8a-46da-8e2f-036e6603c80f",
-      "step_id": "217bea07-d2bd-4add-853c-6e173b0c6147",
+      "id": "5c4688ec-bb71-4006-a0e6-b26ed15d7870",
+      "deadline_id": "9cac9ba7-e3e1-46ef-989a-607f594b2b15",
+      "contract_id": "3d4c39dd-047a-4525-ab13-bf321d40bc03",
+      "step_id": "b9c8fc62-48bb-43b3-875c-e83be9586d45",
       "user_id": null,
       "action": "created",
       "reason": "合同审批步骤启动",
       "old_status": null,
       "new_status": "active",
       "old_value": null,
-      "new_value": "{\"deadline_at\":1780920912385,\"sla_config_id\":\"581e2fde-b147-48f8-8a18-33f64ae6b1b7\"}",
+      "new_value": "{\"deadline_at\":1780836804232,\"sla_config_id\":\"c3fc9fe1-9f1f-4510-a1b3-e9ad1fcb1cd7\"}",
       "ip_address": null,
-      "created_at": 1780748112389
-    },
-    {
-      "id": "5dc083fc-f063-4814-85bb-4dc6f35122b2",
-      "deadline_id": "9fcc0ec7-b8ac-4a9d-af11-f8462121933e",
-      "contract_id": "acd6c895-cc8a-46da-8e2f-036e6603c80f",
-      "step_id": "217bea07-d2bd-4add-853c-6e173b0c6147",
-      "user_id": "619b0c64-ebcf-4c24-b13a-1293e4440496",
-      "action": "manual_reminder",
-      "reason": "review duplicate first",
-      "old_status": "active",
-      "new_status": "active",
-      "old_value": null,
-      "new_value": null,
-      "ip_address": "::ffff:127.0.0.1",
-      "created_at": 1780748112402
-    },
-    {
-      "id": "54540467-b23e-41c0-8b05-53445cf76981",
-      "deadline_id": "9fcc0ec7-b8ac-4a9d-af11-f8462121933e",
-      "contract_id": "acd6c895-cc8a-46da-8e2f-036e6603c80f",
-      "step_id": "217bea07-d2bd-4add-853c-6e173b0c6147",
-      "user_id": "619b0c64-ebcf-4c24-b13a-1293e4440496",
-      "action": "manual_reminder",
-      "reason": "review duplicate second",
-      "old_status": "active",
-      "new_status": "active",
-      "old_value": null,
-      "new_value": null,
-      "ip_address": "::ffff:127.0.0.1",
-      "created_at": 1780748112407
-    },
-    {
-      "id": "1f6ced58-3946-4892-86ac-76445bbc90ce",
-      "deadline_id": "04727a3f-1167-49c7-aafa-a5fbc4b000ca",
-      "contract_id": "acd6c895-cc8a-46da-8e2f-036e6603c80f",
-      "step_id": "217bea07-d2bd-4add-853c-6e173b0c6147",
-      "user_id": null,
-      "action": "created",
-      "reason": "合同审批步骤启动",
-      "old_status": null,
-      "new_status": "active",
-      "old_value": null,
-      "new_value": "{\"deadline_at\":1780920912385,\"sla_config_id\":\"581e2fde-b147-48f8-8a18-33f64ae6b1b7\"}",
-      "ip_address": null,
-      "created_at": 1780748112431
+      "created_at": 1780750404239
     }
   ]
 }

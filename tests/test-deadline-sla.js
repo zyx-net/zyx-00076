@@ -273,18 +273,24 @@ async function runTests() {
   assert(reminderLog.user_id === users.admin.id, '催办人正确');
   assert(reminderLog.reason === '请尽快处理此合同', '催办原因正确');
 
-  log('测试 18: 重复手动催办 - 不冲突（允许多次催办）');
-  const reminderResult2 = DeadlineService.sendManualReminder(
-    activeDeadline.id,
-    users.admin.id,
-    '再次提醒，请加急处理',
-    '127.0.0.1'
-  );
-  assert(reminderResult2.success === true, '第二次手动催办成功');
+  log('测试 18: 重复手动催办 - 冲突（同一active时限只能有一次未消化的手动催办）');
+  let thrownError = null;
+  try {
+    DeadlineService.sendManualReminder(
+      activeDeadline.id,
+      users.admin.id,
+      '再次提醒，请加急处理',
+      '127.0.0.1'
+    );
+  } catch (e) {
+    thrownError = e;
+  }
+  assert(thrownError !== null, '第二次手动催办应该抛出错误');
+  assert(thrownError.message.includes('未消化的手动催办'), '错误信息应包含未消化的手动催办');
   
-  const manualReminderLogs = DeadlineAuditLog.findByDeadline(activeDeadline.id)
+  const manualReminderLogsAfterConflict = DeadlineAuditLog.findByDeadline(activeDeadline.id)
     .filter(l => l.action === 'manual_reminder');
-  assert(manualReminderLogs.length === 2, '两次催办都有审计记录');
+  assert(manualReminderLogsAfterConflict.length === 1, '只有第一次催办有审计记录，第二次不应新增');
 
   log('测试 19: 自动催办 - 首次催办');
   const now = Date.now();
@@ -562,7 +568,175 @@ async function runTests() {
   }
   assert(true, `即将超时列表过滤正确，共${dueSoonDeadlines.length}条即将超时记录`);
 
-  log('测试 39: 全流程完整测试 - 从创建到归档所有时限状态正确');
+  log('测试 39: 自动催办后再手动催办 - 自动催办不消化手动催办');
+  const contractAuto = createTestContract('HT-DEADLINE-AUTO', users.zhangsan.id, depts.tech.id, 'high', 2000000);
+  const submitAuto = await ContractApprovalService.submitContract(contractAuto.id, users.zhangsan.id, '127.0.0.1');
+  const deadlineAuto = ApprovalDeadline.findActiveByContract(contractAuto.id)[0];
+  
+  const now39 = Date.now();
+  db.prepare('UPDATE approval_deadlines SET first_reminder_at = ?, first_reminder_sent = ? WHERE id = ?')
+    .run(now39 - 1000, 0, deadlineAuto.id);
+  db.forceSave();
+  DeadlineService.processAutomaticReminders(now39);
+  const afterAuto = ApprovalDeadline.findById(deadlineAuto.id);
+  assert(afterAuto.first_reminder_sent === true, '自动催办已发送');
+  
+  const manualAfterAuto = DeadlineService.sendManualReminder(
+    deadlineAuto.id, users.admin.id, '自动催办后手动催办', '127.0.0.1'
+  );
+  assert(manualAfterAuto.success === true, '自动催办后可以手动催办');
+  
+  let error39 = null;
+  try {
+    DeadlineService.sendManualReminder(
+      deadlineAuto.id, users.admin.id, '第二次手动催办', '127.0.0.1'
+    );
+  } catch (e) {
+    error39 = e;
+  }
+  assert(error39 !== null, '连续第二次手动催办应该失败');
+  assert(error39.message.includes('未消化的手动催办'), '错误信息正确');
+
+  log('测试 40: 暂停后手动催办 - 暂停消化了之前的手动催办');
+  const contractPause = createTestContract('HT-DEADLINE-PAUSE', users.lisi.id, depts.sales.id, 'medium', 500000);
+  const submitPause = await ContractApprovalService.submitContract(contractPause.id, users.lisi.id, '127.0.0.1');
+  const deadlinePause = ApprovalDeadline.findActiveByContract(contractPause.id)[0];
+  
+  DeadlineService.sendManualReminder(deadlinePause.id, users.admin.id, '催办1', '127.0.0.1');
+  let error40a = null;
+  try {
+    DeadlineService.sendManualReminder(deadlinePause.id, users.admin.id, '催办2', '127.0.0.1');
+  } catch (e) { error40a = e; }
+  assert(error40a !== null, '暂停前重复催办应该失败');
+  
+  DeadlineService.pauseDeadline(deadlinePause.id, users.admin.id, '测试暂停', '127.0.0.1');
+  DeadlineService.resumeDeadline(deadlinePause.id, users.admin.id, '127.0.0.1');
+  
+  const remindAfterResume = DeadlineService.sendManualReminder(
+    deadlinePause.id, users.admin.id, '恢复后再次催办', '127.0.0.1'
+  );
+  assert(remindAfterResume.success === true, '暂停+恢复后可以再次催办');
+  const manualLogs40 = DeadlineAuditLog.findByDeadline(deadlinePause.id)
+    .filter(l => l.action === 'manual_reminder');
+  assert(manualLogs40.length === 2, '共有2条手动催办记录');
+
+  log('测试 41: 完成后手动催办 - 状态为completed不允许催办');
+  const contractComplete = createTestContract('HT-DEADLINE-COMPLETE', users.zhangsan.id, depts.tech.id, 'medium', 500000);
+  const submitComplete = await ContractApprovalService.submitContract(contractComplete.id, users.zhangsan.id, '127.0.0.1');
+  const deadlineComplete = ApprovalDeadline.findActiveByContract(contractComplete.id)[0];
+  
+  const stepComplete = ApprovalStep.findById(deadlineComplete.step_id);
+  await ContractApprovalService.processApproval(
+    contractComplete.id, stepComplete.id, users.qianshiyi.id, 'approve', '同意', null, '127.0.0.1'
+  );
+  
+  let error41 = null;
+  try {
+    DeadlineService.sendManualReminder(deadlineComplete.id, users.admin.id, '完成后催办', '127.0.0.1');
+  } catch (e) {
+    error41 = e;
+  }
+  assert(error41 !== null, '完成后催办应该失败');
+  assert(error41.message.includes('不允许催办'), '错误信息应包含不允许催办');
+
+  log('测试 42: 重新计算后手动催办 - 旧时限关闭，新时限可以催办');
+  const contractRecalc = createTestContract('HT-DEADLINE-RECALC', users.lisi.id, depts.tech.id, 'high', 3000000);
+  const submitRecalc = await ContractApprovalService.submitContract(contractRecalc.id, users.lisi.id, '127.0.0.1');
+  const deadlineRecalc = ApprovalDeadline.findActiveByContract(contractRecalc.id)[0];
+  
+  DeadlineService.sendManualReminder(deadlineRecalc.id, users.admin.id, '重新计算前催办', '127.0.0.1');
+  
+  const newSla42 = SlaConfig.create({
+    name: '测试42-SLA',
+    risk_level: 'high',
+    min_amount: 1000000,
+    deadline_hours: 12,
+    priority: 500,
+    created_by: users.admin.id
+  });
+  
+  const recalcResult42 = DeadlineService.recalculateDeadline(
+    deadlineRecalc.id, users.admin.id, '测试重新计算', '127.0.0.1'
+  );
+  assert(recalcResult42.old_deadline.status === 'closed', '旧时限已关闭');
+  
+  let error42a = null;
+  try {
+    DeadlineService.sendManualReminder(deadlineRecalc.id, users.admin.id, '旧时限催办', '127.0.0.1');
+  } catch (e) { error42a = e; }
+  assert(error42a !== null, '旧时限（已关闭）催办应该失败');
+  
+  const remindNew = DeadlineService.sendManualReminder(
+    recalcResult42.new_deadline.id, users.admin.id, '新时限催办', '127.0.0.1'
+  );
+  assert(remindNew.success === true, '新时限可以催办');
+
+  log('测试 43: 服务重启后重复催办 - 基于持久化审计日志判断');
+  const contractRestart = createTestContract('HT-DEADLINE-RESTART', users.zhangsan.id, depts.tech.id, 'medium', 800000);
+  const submitRestart = await ContractApprovalService.submitContract(contractRestart.id, users.zhangsan.id, '127.0.0.1');
+  const deadlineRestart = ApprovalDeadline.findActiveByContract(contractRestart.id)[0];
+  
+  DeadlineService.sendManualReminder(deadlineRestart.id, users.admin.id, '重启前催办', '127.0.0.1');
+  db.forceSave();
+  db.load();
+  
+  let error43 = null;
+  try {
+    DeadlineService.sendManualReminder(deadlineRestart.id, users.admin.id, '重启后重复催办', '127.0.0.1');
+  } catch (e) {
+    error43 = e;
+  }
+  assert(error43 !== null, '重启后重复催办应该失败');
+  assert(error43.message.includes('未消化的手动催办'), '错误信息正确');
+  
+  const manualLogs43 = DeadlineAuditLog.findByDeadline(deadlineRestart.id)
+    .filter(l => l.action === 'manual_reminder');
+  assert(manualLogs43.length === 1, '重启后仍然只有1条手动催办记录');
+
+  log('测试 44: 权限验证 - 普通用户不能调用需要admin的API（路由层验证）');
+  const normalUser = users.zhangsan;
+  assert(!normalUser.roles.includes('admin'), '张三不是管理员');
+  const adminUser = users.admin;
+  assert(adminUser.roles.includes('admin'), 'admin是管理员');
+  
+  const contractPermission = createTestContract('HT-DEADLINE-PERM', users.zhangsan.id, depts.tech.id, 'medium', 600000);
+  const submitPermission = await ContractApprovalService.submitContract(contractPermission.id, users.zhangsan.id, '127.0.0.1');
+  const deadlinePermission = ApprovalDeadline.findActiveByContract(contractPermission.id)[0];
+  
+  const remindByAdmin = DeadlineService.sendManualReminder(
+    deadlinePermission.id, users.admin.id, '管理员催办', '127.0.0.1'
+  );
+  assert(remindByAdmin.success === true, '管理员可以催办');
+  
+  const hasUndigested = DeadlineService.hasUndigestedManualReminder(deadlinePermission.id);
+  assert(hasUndigested === true, '管理员催办后存在未消化的手动催办');
+  
+  let error44 = null;
+  try {
+    DeadlineService.pauseDeadline(deadlinePermission.id, normalUser.id, '普通用户尝试暂停', '127.0.0.1');
+  } catch (e) { error44 = e; }
+  assert(error44 === null, '服务层不做权限校验，权限校验在路由层');
+  const paused44 = ApprovalDeadline.findById(deadlinePermission.id);
+  assert(paused44.status === 'paused', '服务层允许普通用户暂停（权限在路由层校验）');
+  DeadlineService.resumeDeadline(deadlinePermission.id, users.admin.id, '127.0.0.1');
+
+  log('测试 45: hasUndigestedManualReminder 方法正确性验证');
+  const contractMethod = createTestContract('HT-DEADLINE-METHOD', users.lisi.id, depts.sales.id, 'medium', 400000);
+  const submitMethod = await ContractApprovalService.submitContract(contractMethod.id, users.lisi.id, '127.0.0.1');
+  const deadlineMethod = ApprovalDeadline.findActiveByContract(contractMethod.id)[0];
+  
+  assert(DeadlineService.hasUndigestedManualReminder(deadlineMethod.id) === false, '无催办时返回false');
+  
+  DeadlineService.sendManualReminder(deadlineMethod.id, users.admin.id, '测试1', '127.0.0.1');
+  assert(DeadlineService.hasUndigestedManualReminder(deadlineMethod.id) === true, '有未消化催办时返回true');
+  
+  DeadlineService.pauseDeadline(deadlineMethod.id, users.admin.id, '测试', '127.0.0.1');
+  assert(DeadlineService.hasUndigestedManualReminder(deadlineMethod.id) === false, '暂停后催办被消化');
+  
+  DeadlineService.resumeDeadline(deadlineMethod.id, users.admin.id, '127.0.0.1');
+  assert(DeadlineService.hasUndigestedManualReminder(deadlineMethod.id) === false, '恢复后仍然无未消化催办');
+
+  log('测试 46: 全流程完整测试 - 从创建到归档所有时限状态正确');
   cleanupDatabase();
   execSync('node src/seeders/seed.js', { stdio: 'inherit' });
   db.load();

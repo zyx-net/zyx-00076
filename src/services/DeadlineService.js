@@ -9,6 +9,14 @@ const db = require('../database/db');
 const HOURS_TO_MS = 60 * 60 * 1000;
 const DEFAULT_DEADLINE_HOURS = 24;
 
+const DIGESTING_ACTIONS = [
+  DeadlineAuditLog.ACTION_TYPES.PAUSED,
+  DeadlineAuditLog.ACTION_TYPES.RESUMED,
+  DeadlineAuditLog.ACTION_TYPES.COMPLETED,
+  DeadlineAuditLog.ACTION_TYPES.CLOSED,
+  DeadlineAuditLog.ACTION_TYPES.RECALCULATED
+];
+
 class DeadlineService {
   static calculateDeadline(contract, step, startedAt = Date.now()) {
     const slaConfig = SlaConfig.findBestMatch(contract, step.step_name);
@@ -196,6 +204,33 @@ class DeadlineService {
     return resumed;
   }
 
+  static hasUndigestedManualReminder(deadlineId) {
+    const logs = DeadlineAuditLog.findByDeadline(deadlineId);
+    if (logs.length === 0) {
+      return false;
+    }
+
+    let lastManualReminderIndex = -1;
+    for (let i = 0; i < logs.length; i++) {
+      if (logs[i].action === DeadlineAuditLog.ACTION_TYPES.MANUAL_REMINDER) {
+        lastManualReminderIndex = i;
+        break;
+      }
+    }
+
+    if (lastManualReminderIndex === -1) {
+      return false;
+    }
+
+    for (let i = 0; i < lastManualReminderIndex; i++) {
+      if (DIGESTING_ACTIONS.includes(logs[i].action)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   static sendManualReminder(deadlineId, userId, reason, ipAddress = null) {
     const deadline = ApprovalDeadline.findById(deadlineId);
     if (!deadline) {
@@ -204,6 +239,10 @@ class DeadlineService {
 
     if (deadline.status !== ApprovalDeadline.STATUSES.ACTIVE) {
       throw new Error(`当前状态 [${deadline.status}] 不允许催办`);
+    }
+
+    if (this.hasUndigestedManualReminder(deadlineId)) {
+      throw new Error('该时限已有未消化的手动催办，请先处理后再催办');
     }
 
     DeadlineAuditLog.create({
