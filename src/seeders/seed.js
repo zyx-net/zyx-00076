@@ -331,4 +331,17 @@ function main() {
   }
 }
 
-main();
+if (require.main === module) {
+  main();
+}
+
+module.exports = async function seed(clearFirst = false) {
+  if (clearFirst) {
+    clearDatabase();
+  }
+  const depts = seedDepartments();
+  const users = seedUsers(depts);
+  const rules = seedRules(users, depts);
+  db.forceSave();
+  return { depts, users, rules };
+};

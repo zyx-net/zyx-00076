@@ -392,16 +392,22 @@ class ContractApprovalService {
       throw new Error('只有管理员或申请人可以归档合同');
     }
     
+    const archivedAt = Date.now();
+    Contract.updateStatus(contractId, CONTRACT_STATUSES.ARCHIVED, {
+      archived_at: archivedAt
+    });
+    
+    const updatedContract = Contract.findById(contractId);
     const attachments = Contract.getAttachments(contractId);
     const actions = ApprovalAction.findByContract(contractId);
     const steps = ApprovalStep.findByContract(contractId);
-    const rule = contract.rule_id ? ApprovalRule.findById(contract.rule_id) : null;
-    const applicant = User.findById(contract.applicant_id);
-    const department = Department.findById(contract.department_id);
+    const rule = updatedContract.rule_id ? ApprovalRule.findById(updatedContract.rule_id) : null;
+    const applicant = User.findById(updatedContract.applicant_id);
+    const department = Department.findById(updatedContract.department_id);
     
     const archiveContent = {
       contract: {
-        ...contract,
+        ...updatedContract,
         applicant_name: applicant ? applicant.name : null,
         department_name: department ? department.name : null
       },
@@ -411,7 +417,7 @@ class ContractApprovalService {
         version: rule.version,
         conditions: rule.conditions,
         steps: rule.steps,
-        hit_reason: contract.rule_hit_reason ? JSON.parse(contract.rule_hit_reason) : null
+        hit_reason: updatedContract.rule_hit_reason ? JSON.parse(updatedContract.rule_hit_reason) : null
       } : null,
       steps: steps.map(s => ({
         ...s,
@@ -420,7 +426,7 @@ class ContractApprovalService {
       actions,
       attachments,
       audit_logs: AuditLog.findByContract(contractId),
-      archived_at: Date.now(),
+      archived_at: archivedAt,
       archived_by: userId,
       version: '1.0'
     };
@@ -432,7 +438,6 @@ class ContractApprovalService {
     });
     
     Contract.updateStatus(contractId, CONTRACT_STATUSES.ARCHIVED, {
-      archived_at: archive.archived_at,
       archive_path: archive.file_path
     });
     

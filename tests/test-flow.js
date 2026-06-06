@@ -133,7 +133,8 @@ async function runMainFlowTest() {
   })));
 
   log('步骤 6: 审批 - 部门经理审批 (钱十一/技术部经理)');
-  const step1 = ApprovalStep.findPendingByContract(contract.id) || ApprovalStep.findByContract(contract.id)[0];
+  const currentContract = Contract.findById(contract.id);
+  const step1 = ApprovalStep.findById(currentContract.current_step_id);
   const approve1 = await ContractApprovalService.processApproval(
     contract.id,
     step1.id,

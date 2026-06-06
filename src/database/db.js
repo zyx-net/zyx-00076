@@ -280,7 +280,7 @@ class JsonStatement {
   }
 
   parseSet(sql) {
-    const setMatch = sql.match(/SET\s+(.+?)(?:WHERE|$)/i);
+    const setMatch = sql.match(/SET\s+(.+?)(?:WHERE|$)/is);
     if (setMatch) {
       const parts = setMatch[1].split(',').map(p => p.trim());
       return parts.map(p => {
@@ -292,13 +292,13 @@ class JsonStatement {
   }
 
   parseWhere(sql) {
-    const whereMatch = sql.match(/WHERE\s+(.+?)(?:ORDER|LIMIT|$)/i);
+    const whereMatch = sql.match(/WHERE\s+(.+?)(?:ORDER|LIMIT|$)/is);
     if (!whereMatch) return null;
     return whereMatch[1].trim();
   }
 
   parseOrderBy(sql) {
-    const orderMatch = sql.match(/ORDER BY\s+(.+?)(?:LIMIT|$)/i);
+    const orderMatch = sql.match(/ORDER BY\s+(.+?)(?:LIMIT|$)/is);
     if (!orderMatch) return null;
     const parts = orderMatch[1].trim().split(/\s+/);
     return { col: parts[0], dir: (parts[1] || 'ASC').toUpperCase() };
