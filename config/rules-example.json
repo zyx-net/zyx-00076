@@ -1,0 +1,52 @@
+{
+  "description": "审批规则配置示例 - 支持金额、部门、风险等级的组合路由",
+  "rule_conditions_operators": {
+    "numeric": ["equals", "not_equals", "greater_than", "greater_than_or_equal", "less_than", "less_than_or_equal", "between"],
+    "string": ["equals", "not_equals", "in", "not_in", "contains"],
+    "composite": ["AND", "OR"]
+  },
+  "step_types": {
+    "single": "单人审批，任意一个指定角色的用户审批即可通过",
+    "any": "多人任选其一，任意一个指定角色的用户审批即可通过",
+    "countersign": "会签，需要指定数量的用户审批才能通过"
+  },
+  "valid_roles": ["applicant", "department_manager", "finance", "legal", "risk", "ceo", "admin"],
+  "risk_levels": ["low", "medium", "high", "critical"],
+  "example_rule_high_value": {
+    "name": "高风险大额合同",
+    "description": "金额 ≥ 100万 或 高/极高风险，需要会签",
+    "priority": 50,
+    "conditions": {
+      "type": "composite",
+      "logic": "OR",
+      "conditions": [
+        { "type": "simple", "field": "amount", "operator": "greater_than_or_equal", "value": 1000000 },
+        { "type": "simple", "field": "risk_level", "operator": "in", "values": ["high", "critical"] }
+      ]
+    },
+    "steps": [
+      { "name": "部门经理审批", "type": "single", "required_roles": ["department_manager"] },
+      { "name": "财务和风险会签 (需2人)", "type": "countersign", "required_roles": ["finance", "risk"], "required_signatures": 2 },
+      { "name": "法务双人会签 (需2人)", "type": "countersign", "required_roles": ["legal"], "required_signatures": 2 },
+      { "name": "CEO最终审批", "type": "single", "required_roles": ["ceo"] }
+    ]
+  },
+  "example_rule_medium": {
+    "name": "中风险中等金额合同",
+    "description": "10万 ≤ 金额 < 100万，中风险",
+    "priority": 20,
+    "conditions": {
+      "type": "composite",
+      "logic": "AND",
+      "conditions": [
+        { "type": "simple", "field": "amount", "operator": "between", "values": [100000, 999999.99] },
+        { "type": "simple", "field": "risk_level", "operator": "equals", "value": "medium" }
+      ]
+    },
+    "steps": [
+      { "name": "部门经理审批", "type": "single", "required_roles": ["department_manager"] },
+      { "name": "财务审核", "type": "single", "required_roles": ["finance"] },
+      { "name": "法务审核", "type": "single", "required_roles": ["legal"] }
+    ]
+  }
+}

@@ -1,0 +1,543 @@
+{
+  "contract": {
+    "id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+    "contract_no": "HT-2025-MAIN-001",
+    "title": "核心系统升级项目合同",
+    "amount": 2000000,
+    "currency": "CNY",
+    "department_id": "f91ae2a0-a64e-4331-b759-35d8e4372f7d",
+    "risk_level": "medium",
+    "content": "这是一个200万的核心系统升级合同，涉及重要系统改造",
+    "applicant_id": "bea7d001-0859-4d3e-a351-f8447c6c83e0",
+    "status": "approved",
+    "created_at": 1780717400223,
+    "updated_at": 1780717400266,
+    "rule_id": "7cf9a205-e4c3-4d21-bc71-4332f2442203",
+    "rule_version": 1,
+    "rule_hit_reason": "[\"  amount greater_than_or_equal 1000000: ✓ (actual: 2000000)\",\"  risk_level in [\\\"high\\\",\\\"critical\\\"]: ✗ (actual: medium)\",\"OR: ✓\"]",
+    "current_step_id": null,
+    "applicant_name": "张三",
+    "department_name": "技术部"
+  },
+  "rule": {
+    "id": "7cf9a205-e4c3-4d21-bc71-4332f2442203",
+    "name": "高风险大额合同",
+    "version": 1,
+    "conditions": {
+      "type": "composite",
+      "logic": "OR",
+      "conditions": [
+        {
+          "type": "simple",
+          "field": "amount",
+          "operator": "greater_than_or_equal",
+          "value": 1000000
+        },
+        {
+          "type": "simple",
+          "field": "risk_level",
+          "operator": "in",
+          "values": [
+            "high",
+            "critical"
+          ]
+        }
+      ]
+    },
+    "steps": [
+      {
+        "name": "部门经理审批",
+        "type": "single",
+        "required_roles": [
+          "department_manager"
+        ]
+      },
+      {
+        "name": "财务和风险会签 (需2人)",
+        "type": "countersign",
+        "required_roles": [
+          "finance",
+          "risk"
+        ],
+        "required_signatures": 2
+      },
+      {
+        "name": "法务双人会签 (需2人)",
+        "type": "countersign",
+        "required_roles": [
+          "legal"
+        ],
+        "required_signatures": 2
+      },
+      {
+        "name": "CEO最终审批",
+        "type": "single",
+        "required_roles": [
+          "ceo"
+        ]
+      }
+    ],
+    "hit_reason": [
+      "  amount greater_than_or_equal 1000000: ✓ (actual: 2000000)",
+      "  risk_level in [\"high\",\"critical\"]: ✗ (actual: medium)",
+      "OR: ✓"
+    ]
+  },
+  "steps": [
+    {
+      "id": "f7d2d4fb-1509-463b-a091-25fe923312d6",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "step_order": 1,
+      "step_name": "部门经理审批",
+      "step_type": "single",
+      "required_roles": [
+        "department_manager"
+      ],
+      "required_signatures": 1,
+      "assigned_to": null,
+      "status": "completed",
+      "started_at": 1780717400229,
+      "completed_at": 1780717400235,
+      "approvals": [
+        {
+          "id": "1a844ee4-7b8e-42e3-b21c-a4c3a25648cb",
+          "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+          "step_id": "f7d2d4fb-1509-463b-a091-25fe923312d6",
+          "approver_id": "cb7dcca6-865c-4602-8901-c7fb48aefc15",
+          "action": "approve",
+          "comment": "同意，本项目符合技术部发展规划",
+          "attachments": null,
+          "created_at": 1780717400235,
+          "approver_name": "钱十一",
+          "approver_username": "qianshiyi"
+        }
+      ]
+    },
+    {
+      "id": "5050c1d7-bb35-4d32-88a8-a37a3fbfa5a2",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "step_order": 2,
+      "step_name": "财务和风险会签 (需2人)",
+      "step_type": "countersign",
+      "required_roles": [
+        "finance",
+        "risk"
+      ],
+      "required_signatures": 2,
+      "assigned_to": null,
+      "status": "completed",
+      "started_at": 1780717400236,
+      "completed_at": 1780717400242,
+      "approvals": [
+        {
+          "id": "6d36030c-c665-43a6-a099-30e5fedd29c4",
+          "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+          "step_id": "5050c1d7-bb35-4d32-88a8-a37a3fbfa5a2",
+          "approver_id": "e7bdacbe-c056-4fd1-8bb7-0217f0f5b9d1",
+          "action": "approve",
+          "comment": "预算充足，同意",
+          "attachments": null,
+          "created_at": 1780717400239,
+          "approver_name": "王五",
+          "approver_username": "wangwu"
+        },
+        {
+          "id": "f4d053ae-8c9f-4e4b-8c65-9f0fdba3639b",
+          "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+          "step_id": "5050c1d7-bb35-4d32-88a8-a37a3fbfa5a2",
+          "approver_id": "b4509ea3-3254-4eb2-8c28-9cb92fd61f75",
+          "action": "approve",
+          "comment": "风险可控，同意",
+          "attachments": null,
+          "created_at": 1780717400241,
+          "approver_name": "孙七",
+          "approver_username": "sunqi"
+        }
+      ]
+    },
+    {
+      "id": "572e1360-9792-48fd-8421-044327837a7e",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "step_order": 3,
+      "step_name": "法务双人会签 (需2人)",
+      "step_type": "countersign",
+      "required_roles": [
+        "legal"
+      ],
+      "required_signatures": 2,
+      "assigned_to": null,
+      "status": "completed",
+      "started_at": 1780717400242,
+      "completed_at": 1780717400261,
+      "approvals": [
+        {
+          "id": "d806ec55-997a-41c7-8764-1ef559f1b1ca",
+          "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+          "step_id": "572e1360-9792-48fd-8421-044327837a7e",
+          "approver_id": "0e3f5b29-9db4-4c1f-9650-efaf2ea7e440",
+          "action": "request_supplement",
+          "comment": "请补充项目技术方案详细说明",
+          "attachments": null,
+          "created_at": 1780717400245,
+          "approver_name": "赵六",
+          "approver_username": "zhaoliu"
+        },
+        {
+          "id": "79019cb4-4bc6-496a-a682-8a4042cf9065",
+          "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+          "step_id": "572e1360-9792-48fd-8421-044327837a7e",
+          "approver_id": "bea7d001-0859-4d3e-a351-f8447c6c83e0",
+          "action": "submit_supplement",
+          "comment": "已补充技术方案说明，请审阅",
+          "attachments": [
+            "技术方案补充说明.pdf"
+          ],
+          "created_at": 1780717400251,
+          "approver_name": "张三",
+          "approver_username": "zhangsan"
+        },
+        {
+          "id": "19d02ae3-aa78-4c66-b7ef-d4b958cf4b96",
+          "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+          "step_id": "572e1360-9792-48fd-8421-044327837a7e",
+          "approver_id": "0e3f5b29-9db4-4c1f-9650-efaf2ea7e440",
+          "action": "approve",
+          "comment": "法律条款合规，同意",
+          "attachments": null,
+          "created_at": 1780717400256,
+          "approver_name": "赵六",
+          "approver_username": "zhaoliu"
+        },
+        {
+          "id": "644f89bf-27b2-4a1f-905c-791cd0091e8b",
+          "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+          "step_id": "572e1360-9792-48fd-8421-044327837a7e",
+          "approver_id": "f568f573-e1e5-4b15-947d-005353367be7",
+          "action": "approve",
+          "comment": "同意，条款完善",
+          "attachments": null,
+          "created_at": 1780717400261,
+          "approver_name": "郑十",
+          "approver_username": "zhengshi"
+        }
+      ]
+    },
+    {
+      "id": "005fdef1-2d31-4452-a892-1d5e05aca922",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "step_order": 4,
+      "step_name": "CEO最终审批",
+      "step_type": "single",
+      "required_roles": [
+        "ceo"
+      ],
+      "required_signatures": 1,
+      "assigned_to": null,
+      "status": "completed",
+      "started_at": 1780717400262,
+      "completed_at": 1780717400266,
+      "approvals": [
+        {
+          "id": "d676edab-e6ae-4db2-b7ad-c3c2a3985422",
+          "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+          "step_id": "005fdef1-2d31-4452-a892-1d5e05aca922",
+          "approver_id": "f3fcc79b-fe2c-4652-82c2-df8120627b15",
+          "action": "approve",
+          "comment": "同意，按计划执行",
+          "attachments": null,
+          "created_at": 1780717400265,
+          "approver_name": "周八",
+          "approver_username": "zhouba"
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "1a844ee4-7b8e-42e3-b21c-a4c3a25648cb",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "step_id": "f7d2d4fb-1509-463b-a091-25fe923312d6",
+      "approver_id": "cb7dcca6-865c-4602-8901-c7fb48aefc15",
+      "action": "approve",
+      "comment": "同意，本项目符合技术部发展规划",
+      "attachments": null,
+      "created_at": 1780717400235,
+      "approver_name": "钱十一",
+      "approver_username": "qianshiyi"
+    },
+    {
+      "id": "6d36030c-c665-43a6-a099-30e5fedd29c4",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "step_id": "5050c1d7-bb35-4d32-88a8-a37a3fbfa5a2",
+      "approver_id": "e7bdacbe-c056-4fd1-8bb7-0217f0f5b9d1",
+      "action": "approve",
+      "comment": "预算充足，同意",
+      "attachments": null,
+      "created_at": 1780717400239,
+      "approver_name": "王五",
+      "approver_username": "wangwu"
+    },
+    {
+      "id": "f4d053ae-8c9f-4e4b-8c65-9f0fdba3639b",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "step_id": "5050c1d7-bb35-4d32-88a8-a37a3fbfa5a2",
+      "approver_id": "b4509ea3-3254-4eb2-8c28-9cb92fd61f75",
+      "action": "approve",
+      "comment": "风险可控，同意",
+      "attachments": null,
+      "created_at": 1780717400241,
+      "approver_name": "孙七",
+      "approver_username": "sunqi"
+    },
+    {
+      "id": "d806ec55-997a-41c7-8764-1ef559f1b1ca",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "step_id": "572e1360-9792-48fd-8421-044327837a7e",
+      "approver_id": "0e3f5b29-9db4-4c1f-9650-efaf2ea7e440",
+      "action": "request_supplement",
+      "comment": "请补充项目技术方案详细说明",
+      "attachments": null,
+      "created_at": 1780717400245,
+      "approver_name": "赵六",
+      "approver_username": "zhaoliu"
+    },
+    {
+      "id": "79019cb4-4bc6-496a-a682-8a4042cf9065",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "step_id": "572e1360-9792-48fd-8421-044327837a7e",
+      "approver_id": "bea7d001-0859-4d3e-a351-f8447c6c83e0",
+      "action": "submit_supplement",
+      "comment": "已补充技术方案说明，请审阅",
+      "attachments": [
+        "技术方案补充说明.pdf"
+      ],
+      "created_at": 1780717400251,
+      "approver_name": "张三",
+      "approver_username": "zhangsan"
+    },
+    {
+      "id": "19d02ae3-aa78-4c66-b7ef-d4b958cf4b96",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "step_id": "572e1360-9792-48fd-8421-044327837a7e",
+      "approver_id": "0e3f5b29-9db4-4c1f-9650-efaf2ea7e440",
+      "action": "approve",
+      "comment": "法律条款合规，同意",
+      "attachments": null,
+      "created_at": 1780717400256,
+      "approver_name": "赵六",
+      "approver_username": "zhaoliu"
+    },
+    {
+      "id": "644f89bf-27b2-4a1f-905c-791cd0091e8b",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "step_id": "572e1360-9792-48fd-8421-044327837a7e",
+      "approver_id": "f568f573-e1e5-4b15-947d-005353367be7",
+      "action": "approve",
+      "comment": "同意，条款完善",
+      "attachments": null,
+      "created_at": 1780717400261,
+      "approver_name": "郑十",
+      "approver_username": "zhengshi"
+    },
+    {
+      "id": "d676edab-e6ae-4db2-b7ad-c3c2a3985422",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "step_id": "005fdef1-2d31-4452-a892-1d5e05aca922",
+      "approver_id": "f3fcc79b-fe2c-4652-82c2-df8120627b15",
+      "action": "approve",
+      "comment": "同意，按计划执行",
+      "attachments": null,
+      "created_at": 1780717400265,
+      "approver_name": "周八",
+      "approver_username": "zhouba"
+    }
+  ],
+  "attachments": [
+    {
+      "id": "c9720ada-4e0e-4ce9-88c8-1d92316f226e",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "file_name": "合同正文.pdf",
+      "file_type": "application/pdf",
+      "file_size": 150000,
+      "file_path": null,
+      "uploaded_by": "bea7d001-0859-4d3e-a351-f8447c6c83e0",
+      "uploaded_at": 1780717400224,
+      "is_required": 1
+    },
+    {
+      "id": "8c06e144-5e6f-4d23-8dbc-d181c059ce41",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "file_name": "技术方案补充说明.pdf",
+      "file_type": "application/pdf",
+      "file_size": 200000,
+      "file_path": null,
+      "uploaded_by": "bea7d001-0859-4d3e-a351-f8447c6c83e0",
+      "uploaded_at": 1780717400251,
+      "is_required": 0
+    }
+  ],
+  "audit_logs": [
+    {
+      "id": "8329c730-14f6-44b6-932b-2df3758141c6",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "user_id": "bea7d001-0859-4d3e-a351-f8447c6c83e0",
+      "action": "submit",
+      "old_value": {
+        "status": "draft"
+      },
+      "new_value": {
+        "status": "approving",
+        "rule_id": "7cf9a205-e4c3-4d21-bc71-4332f2442203",
+        "rule_name": "高风险大额合同",
+        "rule_version": 1
+      },
+      "ip_address": "127.0.0.1",
+      "created_at": 1780717400230,
+      "user_name": "张三",
+      "user_username": "zhangsan"
+    },
+    {
+      "id": "dac99e56-6ef0-48d8-a601-9804b5f18e93",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "user_id": "cb7dcca6-865c-4602-8901-c7fb48aefc15",
+      "action": "approve",
+      "old_value": {
+        "step_id": "f7d2d4fb-1509-463b-a091-25fe923312d6",
+        "step_name": "部门经理审批"
+      },
+      "new_value": {
+        "step_id": "5050c1d7-bb35-4d32-88a8-a37a3fbfa5a2",
+        "step_name": "财务和风险会签 (需2人)"
+      },
+      "ip_address": "127.0.0.1",
+      "created_at": 1780717400236,
+      "user_name": "钱十一",
+      "user_username": "qianshiyi"
+    },
+    {
+      "id": "7c7f4768-ff39-4c29-93f6-922c67de4047",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "user_id": "e7bdacbe-c056-4fd1-8bb7-0217f0f5b9d1",
+      "action": "approve",
+      "old_value": null,
+      "new_value": {
+        "step_id": "5050c1d7-bb35-4d32-88a8-a37a3fbfa5a2",
+        "step_name": "财务和风险会签 (需2人)",
+        "approval_count": 1,
+        "required": 2
+      },
+      "ip_address": "127.0.0.1",
+      "created_at": 1780717400239,
+      "user_name": "王五",
+      "user_username": "wangwu"
+    },
+    {
+      "id": "266992bb-d225-4985-98be-17d74b2efa99",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "user_id": "b4509ea3-3254-4eb2-8c28-9cb92fd61f75",
+      "action": "approve",
+      "old_value": {
+        "step_id": "5050c1d7-bb35-4d32-88a8-a37a3fbfa5a2",
+        "step_name": "财务和风险会签 (需2人)"
+      },
+      "new_value": {
+        "step_id": "572e1360-9792-48fd-8421-044327837a7e",
+        "step_name": "法务双人会签 (需2人)"
+      },
+      "ip_address": "127.0.0.1",
+      "created_at": 1780717400243,
+      "user_name": "孙七",
+      "user_username": "sunqi"
+    },
+    {
+      "id": "ff3c46a5-3c22-4e47-88bf-5ec237ff5da8",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "user_id": "0e3f5b29-9db4-4c1f-9650-efaf2ea7e440",
+      "action": "request_supplement",
+      "old_value": {
+        "status": "approving"
+      },
+      "new_value": {
+        "status": "supplement_requested",
+        "step_name": "法务双人会签 (需2人)",
+        "comment": "请补充项目技术方案详细说明"
+      },
+      "ip_address": "127.0.0.1",
+      "created_at": 1780717400249,
+      "user_name": "赵六",
+      "user_username": "zhaoliu"
+    },
+    {
+      "id": "350742ef-d43a-42c8-8d6b-c6661744fee1",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "user_id": "bea7d001-0859-4d3e-a351-f8447c6c83e0",
+      "action": "submit_supplement",
+      "old_value": {
+        "status": "supplement_requested"
+      },
+      "new_value": {
+        "status": "approving",
+        "attachments_count": 1,
+        "step_name": "法务双人会签 (需2人)"
+      },
+      "ip_address": "127.0.0.1",
+      "created_at": 1780717400252,
+      "user_name": "张三",
+      "user_username": "zhangsan"
+    },
+    {
+      "id": "e61b7eae-bd06-49a0-b4f1-f2d65ffa61f4",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "user_id": "0e3f5b29-9db4-4c1f-9650-efaf2ea7e440",
+      "action": "approve",
+      "old_value": null,
+      "new_value": {
+        "step_id": "572e1360-9792-48fd-8421-044327837a7e",
+        "step_name": "法务双人会签 (需2人)",
+        "approval_count": 1,
+        "required": 2
+      },
+      "ip_address": "127.0.0.1",
+      "created_at": 1780717400257,
+      "user_name": "赵六",
+      "user_username": "zhaoliu"
+    },
+    {
+      "id": "6ba7e9ca-1a31-4de0-b9b9-2e2bfab353e5",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "user_id": "f568f573-e1e5-4b15-947d-005353367be7",
+      "action": "approve",
+      "old_value": {
+        "step_id": "572e1360-9792-48fd-8421-044327837a7e",
+        "step_name": "法务双人会签 (需2人)"
+      },
+      "new_value": {
+        "step_id": "005fdef1-2d31-4452-a892-1d5e05aca922",
+        "step_name": "CEO最终审批"
+      },
+      "ip_address": "127.0.0.1",
+      "created_at": 1780717400262,
+      "user_name": "郑十",
+      "user_username": "zhengshi"
+    },
+    {
+      "id": "985acd3d-cd36-4eca-b2db-6a791e4450b0",
+      "contract_id": "5865b0a6-905b-4f4e-bee3-726c020f8a2d",
+      "user_id": "f3fcc79b-fe2c-4652-82c2-df8120627b15",
+      "action": "approve",
+      "old_value": {
+        "status": "approving"
+      },
+      "new_value": {
+        "status": "approved"
+      },
+      "ip_address": "127.0.0.1",
+      "created_at": 1780717400267,
+      "user_name": "周八",
+      "user_username": "zhouba"
+    }
+  ],
+  "archived_at": 1780717400317,
+  "archived_by": "00f42e31-3f75-4762-82ae-8d661a75a18b",
+  "version": "1.0"
+}

@@ -1,0 +1,22 @@
+{
+  "name": "contract-approval-api",
+  "version": "1.0.0",
+  "description": "合同审批路由与归档 API",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "seed": "node src/seeders/seed.js",
+    "test-flow": "node tests/test-flow.js",
+    "test-failures": "node tests/test-failures.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "uuid": "^9.0.1",
+    "joi": "^17.11.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
