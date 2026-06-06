@@ -15,7 +15,10 @@
     "test-import-summary": "node tests/test-import-summary.js",
     "test-import-summary-persistence": "node tests/test-import-summary-persistence.js",
     "test-batch-traceability": "node tests/test-batch-traceability.js",
-    "test-batch-persistence": "node tests/test-batch-persistence.js"
+    "test-batch-persistence": "node tests/test-batch-persistence.js",
+    "test-deadline-sla": "node tests/test-deadline-sla.js",
+    "test-deadline-reminder-regression": "node tests/test-deadline-reminder-regression.js",
+    "process-reminders": "node -e \"const db = require('./src/database/db'); const DeadlineService = require('./src/services/DeadlineService'); db.load(); const results = DeadlineService.processAutomaticReminders(); console.log('催办处理结果:', JSON.stringify(results, null, 2)); db.forceSave();\""
   },
   "dependencies": {
     "express": "^4.18.2",

@@ -419,7 +419,20 @@ class JsonStatement {
       } else if (val === 'NULL') {
         compareVal = null;
       } else if (val && val.startsWith('(') && val.endsWith(')')) {
-        compareVal = val.slice(1, -1).split(',').map(v => v.trim().replace(/'/g, ''));
+        compareVal = val.slice(1, -1).split(',').map(v => {
+          v = v.trim().replace(/'/g, '');
+          if (v === '?') {
+            return params.shift();
+          } else if (v.startsWith('?')) {
+            const idx = parseInt(v.slice(1)) - 1;
+            return params[idx];
+          } else if (/^\d+$/.test(v)) {
+            return parseInt(v);
+          } else if (/^\d+\.\d+$/.test(v)) {
+            return parseFloat(v);
+          }
+          return v;
+        });
       } else {
         compareVal = val;
       }
