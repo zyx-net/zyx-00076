@@ -13,7 +13,9 @@
     "test-persistence": "node tests/test-persistence-restart.js",
     "test-roundtrip": "node tests/test-export-import-roundtrip.js",
     "test-import-summary": "node tests/test-import-summary.js",
-    "test-import-summary-persistence": "node tests/test-import-summary-persistence.js"
+    "test-import-summary-persistence": "node tests/test-import-summary-persistence.js",
+    "test-batch-traceability": "node tests/test-batch-traceability.js",
+    "test-batch-persistence": "node tests/test-batch-persistence.js"
   },
   "dependencies": {
     "express": "^4.18.2",

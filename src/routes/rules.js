@@ -8,6 +8,7 @@ const authMiddleware = require('../middleware/auth');
 const User = require('../models/User');
 const Department = require('../models/Department');
 const AuditLog = require('../models/AuditLog');
+const ImportBatch = require('../models/ImportBatch');
 const config = require('../config');
 
 const router = express.Router();
@@ -260,6 +261,19 @@ router.post('/import', (req, res) => {
 
     db.forceSave();
 
+    ImportBatch.create({
+      id: batchId,
+      user_id: req.user.id,
+      summary: importSummary.summary,
+      rules_summary: importSummary.rules,
+      results: results,
+      config_switches: {
+        auditNoChange: config.ruleImport.auditNoChange
+      }
+    });
+
+    db.forceSave();
+
     res.json({
       success: true,
       batch_id: batchId,
@@ -432,6 +446,242 @@ router.post('/validate', (req, res) => {
   const rule = req.body;
   const result = RuleEngine.validateRuleSteps(rule);
   res.json(result);
+});
+
+router.get('/batches', (req, res) => {
+  try {
+    if (!req.user.roles.includes('admin')) {
+      return res.status(403).json({ error: '只有管理员可以查看导入批次' });
+    }
+
+    const { user_id, undo_status, limit } = req.query;
+    const options = {};
+    if (user_id) options.user_id = user_id;
+    if (undo_status) options.undo_status = undo_status;
+    if (limit) options.limit = parseInt(limit);
+
+    const batches = ImportBatch.findAll(options);
+    res.json(batches);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get('/batches/:id', (req, res) => {
+  try {
+    if (!req.user.roles.includes('admin')) {
+      return res.status(403).json({ error: '只有管理员可以查看导入批次详情' });
+    }
+
+    const batch = ImportBatch.findById(req.params.id);
+    if (!batch) {
+      return res.status(404).json({ error: '批次不存在' });
+    }
+    res.json(batch);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+function undoImportBatch(batchId, userId, ipAddress) {
+  const batch = ImportBatch.findById(batchId);
+  if (!batch) {
+    return { success: false, error: '批次不存在', status: 404 };
+  }
+
+  if (batch.undo_status !== 'none') {
+    return { success: false, error: '该批次已被撤销，无法重复操作', status: 400 };
+  }
+
+  const db = require('../database/db');
+  const undoResults = [];
+
+  for (const ruleSummary of batch.rules_summary) {
+    const ruleName = ruleSummary.name;
+    const changeType = ruleSummary.change_type;
+    const newVersion = ruleSummary.new_version;
+    const previousVersion = ruleSummary.current_version;
+
+    const allVersions = ApprovalRule.findAllVersionsByName(ruleName);
+    const currentActive = allVersions.find(r => r.is_active);
+
+    if (changeType === 'create' || changeType === 'priority_conflict') {
+      const createdRule = allVersions.find(r => r.version === newVersion);
+      if (createdRule && createdRule.is_active) {
+        ApprovalRule.deactivate(createdRule.id);
+        undoResults.push({
+          name: ruleName,
+          change_type: changeType,
+          undo_action: 'deactivated',
+          version: newVersion,
+          message: `新增规则已停用`
+        });
+
+        AuditLog.create({
+          user_id: userId,
+          action: 'rule_batch_undo',
+          old_value: {
+            name: ruleName,
+            version: newVersion,
+            is_active: 1,
+            change_type: changeType
+          },
+          new_value: {
+            name: ruleName,
+            version: newVersion,
+            is_active: 0,
+            undo_action: 'deactivated',
+            batch_id: batchId
+          },
+          ip_address: ipAddress
+        });
+      } else if (createdRule && !createdRule.is_active) {
+        undoResults.push({
+          name: ruleName,
+          change_type: changeType,
+          undo_action: 'skipped',
+          version: newVersion,
+          reason: '规则已处于非活跃状态，跳过'
+        });
+      } else {
+        undoResults.push({
+          name: ruleName,
+          change_type: changeType,
+          undo_action: 'skipped',
+          version: newVersion,
+          reason: '未找到对应版本规则，跳过'
+        });
+      }
+    } else if (changeType === 'update') {
+      const currentVersionRule = allVersions.find(r => r.version === newVersion);
+      const previousVersionRule = allVersions.find(r => r.version === previousVersion);
+
+      if (currentVersionRule && currentVersionRule.is_active && previousVersionRule) {
+        ApprovalRule.deactivate(currentVersionRule.id);
+
+        const existingMaxVersion = Math.max(...allVersions.map(r => r.version));
+        const newReactivatedVersion = existingMaxVersion + 1;
+
+        const reactivatedRule = ApprovalRule.createVersion({
+          name: previousVersionRule.name,
+          description: previousVersionRule.description,
+          conditions: previousVersionRule.conditions,
+          steps: previousVersionRule.steps,
+          priority: previousVersionRule.priority,
+          effective_from: previousVersionRule.effective_from,
+          effective_to: previousVersionRule.effective_to,
+          version: newReactivatedVersion,
+          created_by: userId
+        });
+
+        undoResults.push({
+          name: ruleName,
+          change_type: changeType,
+          undo_action: 'reverted',
+          deactivated_version: newVersion,
+          reactivated_version: newReactivatedVersion,
+          based_on_version: previousVersion,
+          message: `已切回 v${previousVersion} 内容并创建新版本 v${newReactivatedVersion}`
+        });
+
+        AuditLog.create({
+          user_id: userId,
+          action: 'rule_batch_undo',
+          old_value: {
+            name: ruleName,
+            active_version: newVersion,
+            change_type: changeType
+          },
+          new_value: {
+            name: ruleName,
+            deactivated_version: newVersion,
+            new_active_version: newReactivatedVersion,
+            based_on_version: previousVersion,
+            undo_action: 'reverted',
+            batch_id: batchId
+          },
+          ip_address: ipAddress
+        });
+      } else if (!currentVersionRule || !currentVersionRule.is_active) {
+        undoResults.push({
+          name: ruleName,
+          change_type: changeType,
+          undo_action: 'skipped',
+          version: newVersion,
+          reason: '当前版本已非活跃，跳过'
+        });
+      } else if (!previousVersionRule) {
+        undoResults.push({
+          name: ruleName,
+          change_type: changeType,
+          undo_action: 'skipped',
+          version: newVersion,
+          reason: '未找到上一版本，无法回退，跳过'
+        });
+      }
+    } else if (changeType === 'no_change') {
+      undoResults.push({
+        name: ruleName,
+        change_type: changeType,
+        undo_action: 'skipped',
+        reason: '无变化规则，跳过'
+      });
+    } else if (changeType === 'validation_failed' || changeType === 'duplicate_name') {
+      undoResults.push({
+        name: ruleName,
+        change_type: changeType,
+        undo_action: 'skipped',
+        reason: '校验失败或重名规则，未实际导入，跳过'
+      });
+    } else {
+      undoResults.push({
+        name: ruleName,
+        change_type: changeType,
+        undo_action: 'skipped',
+        reason: `未知变更类型 ${changeType}，跳过`
+      });
+    }
+  }
+
+  db.forceSave();
+
+  ImportBatch.updateUndoStatus(batchId, {
+    undo_status: 'completed',
+    undo_by: userId,
+    undo_results: undoResults
+  });
+
+  db.forceSave();
+
+  return {
+    success: true,
+    batch_id: batchId,
+    undo_results: undoResults,
+    summary: {
+      deactivated: undoResults.filter(r => r.undo_action === 'deactivated').length,
+      reverted: undoResults.filter(r => r.undo_action === 'reverted').length,
+      skipped: undoResults.filter(r => r.undo_action === 'skipped').length,
+      total: undoResults.length
+    }
+  };
+}
+
+router.post('/batches/:id/undo', (req, res) => {
+  try {
+    if (!req.user.roles.includes('admin')) {
+      return res.status(403).json({ error: '只有管理员可以撤销导入批次' });
+    }
+
+    const result = undoImportBatch(req.params.id, req.user.id, req.ip);
+
+    if (!result.success) {
+      return res.status(result.status || 400).json({ error: result.error });
+    }
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 router.get('/:id', (req, res) => {

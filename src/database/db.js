@@ -111,6 +111,19 @@ const TABLE_SCHEMAS = {
     'file_hash TEXT',
     'archived_by TEXT NOT NULL',
     'archived_at INTEGER NOT NULL'
+  ],
+  import_batches: [
+    'id TEXT PRIMARY KEY',
+    'user_id TEXT NOT NULL',
+    'created_at INTEGER NOT NULL',
+    'summary TEXT NOT NULL',
+    'rules_summary TEXT NOT NULL',
+    'results TEXT',
+    'config_switches TEXT NOT NULL',
+    'undo_status TEXT DEFAULT \'none\'',
+    'undo_at INTEGER',
+    'undo_by TEXT',
+    'undo_results TEXT'
   ]
 };
 
