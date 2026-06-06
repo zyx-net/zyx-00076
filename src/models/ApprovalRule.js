@@ -94,6 +94,44 @@ class ApprovalRule {
   static deactivate(id) {
     db.prepare('UPDATE approval_rules SET is_active = ? WHERE id = ?').run(0, id);
   }
+
+  static findAllVersionsByName(name) {
+    const rows = db.prepare('SELECT * FROM approval_rules WHERE name = ? ORDER BY version DESC').all(name);
+    return rows.map(row => ({
+      ...row,
+      conditions: JSON.parse(row.conditions),
+      steps: JSON.parse(row.steps)
+    }));
+  }
+
+  static deactivateAllByName(name) {
+    db.prepare('UPDATE approval_rules SET is_active = ? WHERE name = ?').run(0, name);
+  }
+
+  static createVersion({ name, description, conditions, steps, priority, created_by, effective_from, effective_to, version }) {
+    const id = require('uuid').v4();
+    const now = Date.now();
+    
+    const conditionsObj = typeof conditions === 'string' ? JSON.parse(conditions) : conditions;
+    const stepsObj = typeof steps === 'string' ? JSON.parse(steps) : steps;
+    const conditionsStr = JSON.stringify(conditionsObj);
+    const stepsStr = JSON.stringify(stepsObj);
+    
+    const stmt = db.prepare(`
+      INSERT INTO approval_rules (id, name, version, description, conditions, steps, priority, is_active, created_by, created_at, effective_from, effective_to)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    stmt.run(id, name, version, description || null, conditionsStr, stepsStr, priority || 0, 1, created_by, now, effective_from || null, effective_to || null);
+    
+    return {
+      id, name, version, description: description || null,
+      conditions: conditionsObj, steps: stepsObj,
+      priority: priority || 0, is_active: 1,
+      created_by, created_at: now,
+      effective_from: effective_from || null,
+      effective_to: effective_to || null
+    };
+  }
 }
 
 module.exports = ApprovalRule;

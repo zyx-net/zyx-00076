@@ -377,6 +377,201 @@ Content-Type: application/json
 }
 ```
 
+#### 7. 导出规则 (需 admin 角色)
+```http
+GET /api/rules/export
+x-user-id: <admin用户ID>
+```
+
+**curl 示例**:
+```bash
+# 导出当前所有活跃规则为 JSON
+curl -H "x-user-id: <admin用户ID>" http://localhost:3000/api/rules/export > rules-export.json
+```
+
+**响应示例**:
+```json
+{
+  "exported_at": 1735689600000,
+  "exported_by": "user-uuid",
+  "exported_by_name": "系统管理员",
+  "version": "1.0",
+  "rules": [
+    {
+      "name": "中风险中等金额合同",
+      "version": 2,
+      "description": "规则描述",
+      "priority": 50,
+      "conditions": { "type": "composite", ... },
+      "steps": [ { "name": "部门经理审批", ... } ],
+      "effective_from": null,
+      "effective_to": null,
+      "is_active": 1,
+      "created_by": "user-uuid",
+      "created_at": 1735000000000
+    }
+  ]
+}
+```
+
+#### 8. 导入规则 (需 admin 角色)
+```http
+POST /api/rules/import
+POST /api/rules/import?preview=true
+x-user-id: <admin用户ID>
+Content-Type: application/json
+
+{
+  "rules": [
+    {
+      "name": "新规则名称",
+      "description": "规则描述",
+      "priority": 50,
+      "conditions": { "type": "composite", ... },
+      "steps": [ { "name": "部门经理审批", ... } ]
+    }
+  ]
+}
+```
+
+**curl 示例**:
+```bash
+# 预检模式 - 只显示差异，不落库
+curl -H "x-user-id: <admin用户ID>" -H "Content-Type: application/json" \
+  -d @rules-export.json \
+  "http://localhost:3000/api/rules/import?preview=true"
+
+# 正式导入
+curl -H "x-user-id: <admin用户ID>" -H "Content-Type: application/json" \
+  -d @rules-export.json \
+  http://localhost:3000/api/rules/import
+```
+
+**预检模式响应示例**:
+```json
+{
+  "preview": true,
+  "can_import": true,
+  "differences": [
+    {
+      "name": "中风险中等金额合同",
+      "action": "update",
+      "current_version": 2,
+      "new_version": 3,
+      "changes": ["steps", "priority"]
+    },
+    {
+      "name": "新规则",
+      "action": "create",
+      "new_version": 1
+    }
+  ],
+  "warnings": [
+    "规则[0] \"中风险中等金额合同\": 优先级 50 与现有规则 \"高风险大额合同\" 冲突"
+  ],
+  "info": []
+}
+```
+
+**导入校验项**:
+- ✅ JSON 结构校验
+- ✅ 角色有效性校验
+- ✅ 部门ID有效性校验
+- ✅ 优先级冲突检测
+- ✅ 重名规则检测
+- ✅ 步骤配置完整性校验
+
+#### 9. 获取规则版本列表
+```http
+GET /api/rules/:name/versions
+x-user-id: <用户ID>
+```
+
+**curl 示例**:
+```bash
+curl -H "x-user-id: <用户ID>" \
+  http://localhost:3000/api/rules/中风险中等金额合同/versions
+```
+
+#### 10. 回滚规则版本 (需 admin 角色)
+```http
+POST /api/rules/:name/rollback/:version
+x-user-id: <admin用户ID>
+Content-Type: application/json
+
+{
+  "reason": "回滚原因（必填）"
+}
+```
+
+**curl 示例**:
+```bash
+curl -H "x-user-id: <admin用户ID>" -H "Content-Type: application/json" \
+  -d '{"reason": "新版本存在逻辑错误，回滚到v1"}' \
+  http://localhost:3000/api/rules/中风险中等金额合同/rollback/1
+```
+
+**响应示例**:
+```json
+{
+  "success": true,
+  "message": "规则 \"中风险中等金额合同\" 已回滚到 v1，新版本号 v3",
+  "rolled_back_from": 2,
+  "rolled_back_to": 1,
+  "new_version": 3,
+  "rule": { ... }
+}
+```
+
+---
+
+### 三、规则管理 - 高级接口
+
+#### 1. 全局审计日志 (需 admin 角色)
+```http
+GET /api/users/audit-logs
+GET /api/users/audit-logs?limit=50
+x-user-id: <admin用户ID>
+```
+
+**curl 示例**:
+```bash
+curl -H "x-user-id: <admin用户ID>" \
+  "http://localhost:3000/api/users/audit-logs?limit=100"
+```
+
+#### 2. 持久性检查 (需 admin 角色)
+```http
+GET /api/users/persistence-check
+x-user-id: <admin用户ID>
+```
+
+**curl 示例**:
+```bash
+curl -H "x-user-id: <admin用户ID>" \
+  http://localhost:3000/api/users/persistence-check
+```
+
+**响应示例**:
+```json
+{
+  "status": "ok",
+  "timestamp": 1735689600000,
+  "checks": {
+    "db_file_exists": true,
+    "db_file_size": 102400,
+    "tables_present": 8,
+    "users_count": 10,
+    "rules_count": 5,
+    "contracts_count": 20,
+    "save_consistent": true,
+    "last_save_timeout": true,
+    "pending_transactions": 0
+  },
+  "message": "所有持久性检查通过"
+}
+```
+
 ---
 
 ### 四、部门管理

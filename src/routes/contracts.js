@@ -301,7 +301,16 @@ router.get('/:id/audit-logs', (req, res) => {
     return res.status(404).json({ error: '合同不存在' });
   }
   const logs = AuditLog.findByContract(req.params.id);
-  res.json(logs);
+  
+  if (req.user.roles.includes('admin')) {
+    res.json(logs);
+  } else {
+    const filteredLogs = logs.map(log => {
+      const { old_value, new_value, ip_address, ...publicFields } = log;
+      return publicFields;
+    });
+    res.json(filteredLogs);
+  }
 });
 
 module.exports = router;

@@ -8,7 +8,9 @@
     "dev": "nodemon src/app.js",
     "seed": "node src/seeders/seed.js",
     "test-flow": "node tests/test-flow.js",
-    "test-failures": "node tests/test-failures.js"
+    "test-failures": "node tests/test-failures.js",
+    "test-rules": "node tests/test-rules-import-export.js",
+    "test-persistence": "node tests/test-persistence-restart.js"
   },
   "dependencies": {
     "express": "^4.18.2",
