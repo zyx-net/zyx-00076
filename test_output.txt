@@ -1,0 +1,7 @@
+﻿node : 鉂?鏂█澶辫触: 棣栨鍌姙宸插鐞?
+所在位置 行:1 字符: 41
++ ... e\AI__SPACE\zyx-00076" ; node tests/test-deadline-sla.js 2>&1 | Out-F ...
++                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (鉂?鏂█澶辫触: 棣栨鍌姙宸插鐞?:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

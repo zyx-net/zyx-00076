@@ -666,7 +666,181 @@ curl -H "x-user-id: <admin用户ID>" -H "Content-Type: application/json" \
 
 ---
 
-### 三、规则管理 - 高级接口
+### 三、规则管理 - 导入批次接口 (需 admin 角色)
+
+#### 1. 获取导入批次列表 (需 admin 角色)
+```http
+GET /api/rules/batches
+GET /api/rules/batches?user_id=<userId>&undo_status=none&limit=50
+x-user-id: <admin用户ID>
+```
+
+**查询参数**:
+- `user_id` - 按操作者筛选
+- `undo_status` - 按撤销状态筛选 (`none`, `completed`)
+- `limit` - 返回数量限制，默认 100
+
+**curl 示例**:
+```bash
+curl -H "x-user-id: <admin用户ID>" \
+  http://localhost:3000/api/rules/batches?limit=20
+```
+
+**响应示例**:
+```json
+[
+  {
+    "id": "batch-uuid",
+    "user_id": "user-uuid",
+    "user_name": "系统管理员",
+    "user_username": "admin",
+    "created_at": 1735689600000,
+    "summary": {
+      "create": 2,
+      "update": 1,
+      "no_change": 1,
+      "priority_conflict": 0,
+      "validation_failed": 0,
+      "duplicate_name": 0
+    },
+    "config_switches": {
+      "auditNoChange": false
+    },
+    "undo_status": "none",
+    "undo_at": null,
+    "undo_by": null,
+    "undo_by_name": null
+  }
+]
+```
+
+#### 2. 获取批次详情 (需 admin 角色)
+```http
+GET /api/rules/batches/:id
+x-user-id: <admin用户ID>
+```
+
+**响应示例**:
+```json
+{
+  "id": "batch-uuid",
+  "user_id": "user-uuid",
+  "user_name": "系统管理员",
+  "user_username": "admin",
+  "created_at": 1735689600000,
+  "summary": {
+    "create": 2,
+    "update": 1,
+    "no_change": 1
+  },
+  "rules_summary": [
+    {
+      "index": 0,
+      "name": "新规则",
+      "change_type": "create",
+      "current_version": null,
+      "new_version": 1,
+      "field_diff": {},
+      "should_audit": true
+    },
+    {
+      "index": 1,
+      "name": "中风险中等金额合同",
+      "change_type": "update",
+      "current_version": 2,
+      "new_version": 3,
+      "field_diff": {
+        "priority": { "old": 20, "new": 25 }
+      },
+      "should_audit": true
+    }
+  ],
+  "results": [
+    {
+      "name": "新规则",
+      "version": 1,
+      "id": "rule-uuid",
+      "change_type": "create",
+      "previous_active_version": null,
+      "field_diff": {}
+    }
+  ],
+  "config_switches": {
+    "auditNoChange": false
+  },
+  "undo_status": "none",
+  "undo_at": null,
+  "undo_by": null,
+  "undo_by_name": null,
+  "undo_results": null
+}
+```
+
+#### 3. 撤销导入批次 (需 admin 角色)
+```http
+POST /api/rules/batches/:id/undo
+x-user-id: <admin用户ID>
+```
+
+**撤销逻辑**:
+- **新增规则** (`create` / `priority_conflict`): 停用该规则版本
+- **更新规则** (`update`): 停用当前版本，基于上一活跃版本内容创建新版本（保持版本历史完整）
+- **无变化** (`no_change`): 记录跳过，不做操作
+- **校验失败/重名** (`validation_failed` / `duplicate_name`): 记录跳过，未实际导入
+
+**curl 示例**:
+```bash
+curl -H "x-user-id: <admin用户ID>" -X POST \
+  http://localhost:3000/api/rules/batches/<batchId>/undo
+```
+
+**响应示例**:
+```json
+{
+  "success": true,
+  "batch_id": "batch-uuid",
+  "undo_results": [
+    {
+      "name": "新规则",
+      "change_type": "create",
+      "undo_action": "deactivated",
+      "version": 1,
+      "message": "新增规则已停用"
+    },
+    {
+      "name": "中风险中等金额合同",
+      "change_type": "update",
+      "undo_action": "reverted",
+      "deactivated_version": 3,
+      "reactivated_version": 4,
+      "based_on_version": 2,
+      "message": "已切回 v2 内容并创建新版本 v4"
+    },
+    {
+      "name": "无变化规则",
+      "change_type": "no_change",
+      "undo_action": "skipped",
+      "reason": "无变化规则，跳过"
+    }
+  ],
+  "summary": {
+    "deactivated": 1,
+    "reverted": 1,
+    "skipped": 1,
+    "total": 3
+  }
+}
+```
+
+**撤销状态说明**:
+| undo_status | 说明 |
+|-------------|------|
+| `none` | 未撤销 |
+| `completed` | 已完成撤销 |
+
+---
+
+### 四、规则管理 - 高级接口
 
 #### 1. 全局审计日志 (需 admin 角色)
 ```http
@@ -784,6 +958,394 @@ GET /api/archives/:archiveNo/verify
 #### 4. 按合同查询归档
 ```http
 GET /api/archives/by-contract/:contractId
+```
+
+---
+
+### 六、SLA配置管理 (需 admin 角色)
+
+SLA（服务水平协议）配置用于定义不同合同的审批时限规则。系统会根据合同的风险等级、金额、部门等属性自动匹配最适合的SLA配置。
+
+#### 1. 获取所有SLA配置
+```http
+GET /api/sla
+GET /api/sla?active_only=true
+x-user-id: <用户ID>
+```
+
+**查询参数**:
+- `active_only` - 只返回激活状态的配置
+
+#### 2. 获取SLA配置详情
+```http
+GET /api/sla/:id
+x-user-id: <用户ID>
+```
+
+#### 3. 创建SLA配置 (需 admin 角色)
+```http
+POST /api/sla
+x-user-id: <admin用户ID>
+Content-Type: application/json
+
+{
+  "name": "高风险大额合同SLA",
+  "risk_level": "high",
+  "department_id": null,
+  "min_amount": 1000000,
+  "max_amount": null,
+  "step_name": null,
+  "deadline_hours": 24,
+  "first_reminder_hours": 12,
+  "second_reminder_hours": 18,
+  "escalation_hours": 30,
+  "escalation_roles": ["admin"],
+  "priority": 100,
+  "is_active": true
+}
+```
+
+**字段说明**:
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `name` | string | SLA名称，必填 |
+| `risk_level` | string | 风险等级：low/medium/high/critical，null表示通用 |
+| `department_id` | string | 部门ID，null表示通用 |
+| `min_amount` | number | 最低金额，null表示不限 |
+| `max_amount` | number | 最高金额，null表示不限 |
+| `step_name` | string | 步骤名称，null表示通用 |
+| `deadline_hours` | number | 审批时限（小时），必填 |
+| `first_reminder_hours` | number | 首次催办时间（小时），需小于deadline_hours |
+| `second_reminder_hours` | number | 二次催办时间（小时），需大于first_reminder_hours |
+| `escalation_hours` | number | 升级时间（小时），需大于deadline_hours |
+| `escalation_roles` | array | 升级通知角色，escalation_hours设置时必填 |
+| `priority` | number | 优先级，数值越大优先级越高 |
+| `is_active` | boolean | 是否激活 |
+
+**SLA匹配规则**:
+- 系统按priority从高到低匹配所有激活的SLA配置
+- 最具体的规则（指定了最多匹配条件）优先于通用规则
+- 每个审批步骤只会匹配一个SLA配置
+
+#### 4. 更新SLA配置 (需 admin 角色)
+```http
+PUT /api/sla/:id
+x-user-id: <admin用户ID>
+Content-Type: application/json
+
+{
+  "name": "更新后的SLA名称",
+  "deadline_hours": 48
+}
+```
+
+#### 5. 停用SLA配置 (需 admin 角色)
+```http
+POST /api/sla/:id/deactivate
+x-user-id: <admin用户ID>
+```
+
+#### 6. 激活SLA配置 (需 admin 角色)
+```http
+POST /api/sla/:id/activate
+x-user-id: <admin用户ID>
+```
+
+#### 7. 删除SLA配置 (需 admin 角色)
+```http
+DELETE /api/sla/:id
+x-user-id: <admin用户ID>
+```
+
+#### 8. 验证SLA配置
+```http
+POST /api/sla/validate
+x-user-id: <用户ID>
+Content-Type: application/json
+
+{
+  "name": "测试SLA",
+  "deadline_hours": 24,
+  "first_reminder_hours": 12
+}
+```
+
+**响应示例**:
+```json
+{
+  "valid": false,
+  "errors": [
+    "first_reminder_hours 必须小于 deadline_hours",
+    "设置 escalation_hours 时必须同时设置 escalation_roles"
+  ]
+}
+```
+
+#### 9. 测试SLA匹配
+```http
+POST /api/sla/match
+x-user-id: <用户ID>
+Content-Type: application/json
+
+{
+  "contract": {
+    "amount": 2000000,
+    "department_id": "<部门ID>",
+    "risk_level": "high"
+  },
+  "step_name": "财务审核"
+}
+```
+
+**响应示例**:
+```json
+{
+  "matches": [
+    { "id": "sla-1", "name": "高风险大额合同SLA", "priority": 100 },
+    { "id": "sla-2", "name": "通用SLA", "priority": 0 }
+  ],
+  "best_match": {
+    "id": "sla-1",
+    "name": "高风险大额合同SLA",
+    "deadline_hours": 24,
+    "first_reminder_hours": 12
+  }
+}
+```
+
+---
+
+### 七、时限管理
+
+时限记录跟踪每个审批步骤的截止时间、催办状态和升级情况。
+
+#### 1. 获取我的待办时限列表
+```http
+GET /api/deadlines/my
+GET /api/deadlines/my?overdue_only=true
+GET /api/deadlines/my?due_soon_hours=24
+GET /api/deadlines/my?status=active
+x-user-id: <用户ID>
+```
+
+**查询参数**:
+- `overdue_only` - 只返回已超时的时限
+- `due_soon_hours` - 只返回指定小时内即将到期的时限
+- `status` - 按状态筛选：active/paused/completed/closed
+
+**响应示例**:
+```json
+[
+  {
+    "id": "deadline-uuid",
+    "contract_id": "contract-uuid",
+    "contract_no": "HT-2025-001",
+    "contract_title": "技术服务合同",
+    "step_id": "step-uuid",
+    "step_name": "财务审核",
+    "approver_roles": ["finance"],
+    "deadline_hours": 24,
+    "deadline_at": 1735776000000,
+    "first_reminder_at": 1735732800000,
+    "first_reminder_sent": true,
+    "second_reminder_at": 1735754400000,
+    "second_reminder_sent": false,
+    "escalation_at": 1735797600000,
+    "escalation_sent": false,
+    "status": "active",
+    "is_overdue": false,
+    "remaining_hours": 12.5,
+    "started_at": 1735689600000,
+    "sla_config_name": "高风险大额合同SLA"
+  }
+]
+```
+
+#### 2. 获取我的超时列表
+```http
+GET /api/deadlines/my/overdue
+x-user-id: <用户ID>
+```
+
+#### 3. 获取我的即将超时列表
+```http
+GET /api/deadlines/my/due-soon
+GET /api/deadlines/my/due-soon?hours=48
+x-user-id: <用户ID>
+```
+
+#### 4. 获取所有时限列表 (需 admin 角色)
+```http
+GET /api/deadlines
+GET /api/deadlines?status=active
+GET /api/deadlines?contract_id=<合同ID>
+GET /api/deadlines?is_overdue=true
+x-user-id: <admin用户ID>
+```
+
+**查询参数**:
+- `status` - 按状态筛选
+- `contract_id` - 按合同筛选
+- `is_overdue` - 只返回已超时的
+
+#### 5. 获取所有超时列表 (需 admin 角色)
+```http
+GET /api/deadlines/overdue
+x-user-id: <admin用户ID>
+```
+
+#### 6. 获取时限详情
+```http
+GET /api/deadlines/:id
+x-user-id: <用户ID>
+```
+
+**权限说明**:
+- admin可查看所有时限
+- 普通用户只能查看自己角色相关的时限
+
+#### 7. 暂停时限 (需 admin 角色)
+暂停后自动催办和升级将停止，直到恢复。
+
+```http
+POST /api/deadlines/:id/pause
+x-user-id: <admin用户ID>
+Content-Type: application/json
+
+{
+  "reason": "假期暂停审批"
+}
+```
+
+#### 8. 恢复时限 (需 admin 角色)
+```http
+POST /api/deadlines/:id/resume
+x-user-id: <admin用户ID>
+```
+
+#### 9. 手动催办 (需 admin 角色)
+```http
+POST /api/deadlines/:id/remind
+x-user-id: <admin用户ID>
+Content-Type: application/json
+
+{
+  "reason": "请尽快处理此合同"
+}
+```
+
+**响应示例**:
+```json
+{
+  "success": true,
+  "message": "催办通知已发送",
+  "deadline": { ... }
+}
+```
+
+#### 10. 重新计算时限 (需 admin 角色)
+当SLA配置变更时，可重新计算某条时限的截止时间。旧时限会被关闭，新时限会创建。
+
+```http
+POST /api/deadlines/:id/recalculate
+x-user-id: <admin用户ID>
+Content-Type: application/json
+
+{
+  "reason": "应用新的SLA配置"
+}
+```
+
+**响应示例**:
+```json
+{
+  "old_deadline": { "id": "old-uuid", "status": "closed", ... },
+  "new_deadline": { "id": "new-uuid", "status": "active", "deadline_hours": 12, ... }
+}
+```
+
+#### 11. 获取时限审计日志
+```http
+GET /api/deadlines/:id/audit-logs
+x-user-id: <用户ID>
+```
+
+**审计日志操作类型**:
+- `created` - 时限创建
+- `paused` - 暂停
+- `resumed` - 恢复
+- `manual_reminder` - 手动催办
+- `first_reminder` - 首次自动催办
+- `second_reminder` - 二次自动催办
+- `escalation` - 升级通知
+- `completed` - 步骤完成
+- `closed` - 关闭（补件/驳回/归档等）
+- `recalculated` - 重新计算
+
+**响应示例**:
+```json
+[
+  {
+    "id": "log-uuid",
+    "action": "paused",
+    "user_id": "user-uuid",
+    "user_name": "系统管理员",
+    "reason": "假期暂停审批",
+    "old_status": "active",
+    "new_status": "paused",
+    "ip_address": "127.0.0.1",
+    "created_at": 1735689600000
+  }
+]
+```
+
+#### 12. 按合同查询时限
+```http
+GET /api/deadlines/contract/:contractId
+x-user-id: <用户ID>
+```
+
+#### 13. 手动触发催办处理 (需 admin 角色)
+```http
+POST /api/deadlines/process-reminders
+x-user-id: <admin用户ID>
+```
+
+**响应示例**:
+```json
+{
+  "success": true,
+  "results": {
+    "first_reminders": ["deadline-1", "deadline-2"],
+    "second_reminders": [],
+    "escalations": []
+  },
+  "message": "处理完成：首次催办 2 条，二次催办 0 条，升级 0 条"
+}
+```
+
+#### 14. 获取定时任务状态 (需 admin 角色)
+```http
+GET /api/deadlines/scheduler/status
+x-user-id: <admin用户ID>
+```
+
+**响应示例**:
+```json
+{
+  "running": true,
+  "interval_minutes": 1,
+  "last_run_at": 1735689600000,
+  "next_run_at": 1735689660000,
+  "total_runs": 125,
+  "total_reminders_sent": 45
+}
+```
+
+#### 15. 手动触发定时任务 (需 admin 角色)
+```http
+POST /api/deadlines/scheduler/trigger
+x-user-id: <admin用户ID>
 ```
 
 ---

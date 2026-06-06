@@ -124,6 +124,65 @@ const TABLE_SCHEMAS = {
     'undo_at INTEGER',
     'undo_by TEXT',
     'undo_results TEXT'
+  ],
+  sla_configs: [
+    'id TEXT PRIMARY KEY',
+    'name TEXT NOT NULL',
+    'risk_level TEXT',
+    'department_id TEXT',
+    'min_amount REAL',
+    'max_amount REAL',
+    'step_name TEXT',
+    'deadline_hours INTEGER NOT NULL',
+    'first_reminder_hours INTEGER',
+    'second_reminder_hours INTEGER',
+    'escalation_hours INTEGER',
+    'escalation_roles TEXT',
+    'priority INTEGER NOT NULL DEFAULT 0',
+    'is_active INTEGER DEFAULT 1',
+    'created_by TEXT NOT NULL',
+    'created_at INTEGER NOT NULL',
+    'updated_at INTEGER NOT NULL'
+  ],
+  approval_deadlines: [
+    'id TEXT PRIMARY KEY',
+    'contract_id TEXT NOT NULL',
+    'step_id TEXT NOT NULL',
+    'step_name TEXT NOT NULL',
+    'sla_config_id TEXT NOT NULL',
+    'approver_roles TEXT NOT NULL',
+    'started_at INTEGER NOT NULL',
+    'deadline_hours INTEGER NOT NULL',
+    'deadline_at INTEGER NOT NULL',
+    'first_reminder_at INTEGER',
+    'second_reminder_at INTEGER',
+    'escalation_at INTEGER',
+    'first_reminder_sent INTEGER DEFAULT 0',
+    'second_reminder_sent INTEGER DEFAULT 0',
+    'escalation_sent INTEGER DEFAULT 0',
+    'status TEXT NOT NULL DEFAULT \'active\'',
+    'paused_at INTEGER',
+    'paused_by TEXT',
+    'pause_reason TEXT',
+    'closed_at INTEGER',
+    'close_reason TEXT',
+    'created_at INTEGER NOT NULL',
+    'updated_at INTEGER NOT NULL'
+  ],
+  deadline_audit_logs: [
+    'id TEXT PRIMARY KEY',
+    'deadline_id TEXT NOT NULL',
+    'contract_id TEXT NOT NULL',
+    'step_id TEXT NOT NULL',
+    'user_id TEXT',
+    'action TEXT NOT NULL',
+    'reason TEXT',
+    'old_status TEXT',
+    'new_status TEXT',
+    'old_value TEXT',
+    'new_value TEXT',
+    'ip_address TEXT',
+    'created_at INTEGER NOT NULL'
   ]
 };
 
@@ -510,6 +569,14 @@ class JsonStatement {
       for (const set of sets) {
         if (set.val === '?') {
           row[set.col] = params[setParamIndex++];
+        } else if (set.val === 'NULL') {
+          row[set.col] = null;
+        } else if (set.val.startsWith("'") && set.val.endsWith("'")) {
+          row[set.col] = set.val.slice(1, -1);
+        } else if (/^\d+$/.test(set.val)) {
+          row[set.col] = parseInt(set.val);
+        } else if (/^\d+\.\d+$/.test(set.val)) {
+          row[set.col] = parseFloat(set.val);
         } else {
           row[set.col] = set.val;
         }

@@ -2,6 +2,7 @@ const db = require('../database/db');
 const Department = require('../models/Department');
 const User = require('../models/User');
 const ApprovalRule = require('../models/ApprovalRule');
+const SlaConfig = require('../models/SlaConfig');
 
 function clearDatabase() {
   console.log('清空现有数据...');
@@ -12,6 +13,9 @@ function clearDatabase() {
   db.prepare('DELETE FROM audit_logs').run();
   db.prepare('DELETE FROM contracts').run();
   db.prepare('DELETE FROM approval_rules').run();
+  db.prepare('DELETE FROM sla_configs').run();
+  db.prepare('DELETE FROM approval_deadlines').run();
+  db.prepare('DELETE FROM deadline_audit_logs').run();
   db.prepare('DELETE FROM users').run();
   db.prepare('DELETE FROM departments').run();
   console.log('数据已清空\n');
@@ -284,6 +288,83 @@ function seedRules(users, depts) {
   return { rule1, rule2, rule3, rule4 };
 }
 
+function seedSlaConfigs(users, depts) {
+  console.log('创建SLA时限配置...');
+  
+  const sla1 = SlaConfig.create({
+    name: '高风险大额合同SLA',
+    risk_level: 'high',
+    min_amount: 1000000,
+    deadline_hours: 24,
+    first_reminder_hours: 12,
+    second_reminder_hours: 18,
+    escalation_hours: 36,
+    escalation_roles: ['ceo', 'admin'],
+    priority: 100,
+    created_by: users.admin.id
+  });
+  
+  const sla2 = SlaConfig.create({
+    name: '中风险合同SLA',
+    risk_level: 'medium',
+    min_amount: 100000,
+    max_amount: 999999.99,
+    deadline_hours: 48,
+    first_reminder_hours: 24,
+    second_reminder_hours: 36,
+    escalation_hours: 72,
+    escalation_roles: ['admin'],
+    priority: 50,
+    created_by: users.admin.id
+  });
+  
+  const sla3 = SlaConfig.create({
+    name: '低风险小额合同SLA',
+    risk_level: 'low',
+    max_amount: 99999.99,
+    deadline_hours: 72,
+    first_reminder_hours: 36,
+    priority: 20,
+    created_by: users.admin.id
+  });
+  
+  const sla4 = SlaConfig.create({
+    name: '技术部合同SLA',
+    department_id: depts.tech.id,
+    deadline_hours: 36,
+    first_reminder_hours: 18,
+    priority: 30,
+    created_by: users.admin.id
+  });
+  
+  const sla5 = SlaConfig.create({
+    name: '销售部合同SLA',
+    department_id: depts.sales.id,
+    deadline_hours: 60,
+    first_reminder_hours: 30,
+    priority: 30,
+    created_by: users.admin.id
+  });
+  
+  const sla6 = SlaConfig.create({
+    name: '默认通用SLA',
+    deadline_hours: 48,
+    first_reminder_hours: 24,
+    priority: 0,
+    created_by: users.admin.id
+  });
+  
+  console.log(`  ✓ 高风险大额合同SLA (24小时, 优先级: 100)`);
+  console.log(`  ✓ 中风险合同SLA (48小时, 优先级: 50)`);
+  console.log(`  ✓ 低风险小额合同SLA (72小时, 优先级: 20)`);
+  console.log(`  ✓ 技术部合同SLA (36小时, 优先级: 30)`);
+  console.log(`  ✓ 销售部合同SLA (60小时, 优先级: 30)`);
+  console.log(`  ✓ 默认通用SLA (48小时, 优先级: 0)`);
+  console.log();
+  
+  return { sla1, sla2, sla3, sla4, sla5, sla6 };
+}
+
 function main() {
   console.log('\n========================================');
   console.log('  合同审批系统 - 种子数据初始化');
@@ -295,6 +376,7 @@ function main() {
     const depts = seedDepartments();
     const users = seedUsers(depts);
     const rules = seedRules(users, depts);
+    const slas = seedSlaConfigs(users, depts);
     
     console.log('========================================');
     console.log('  种子数据初始化完成！');
@@ -323,6 +405,11 @@ function main() {
     console.log(`  中风险中等金额合同 ID: ${rules.rule2.id}`);
     console.log();
     
+    console.log('SLA配置快速参考:');
+    console.log(`  高风险大额合同SLA ID: ${slas.sla1.id}`);
+    console.log(`  默认通用SLA ID: ${slas.sla6.id}`);
+    console.log();
+    
     db.forceSave();
     
   } catch (err) {
@@ -342,6 +429,7 @@ module.exports = async function seed(clearFirst = false) {
   const depts = seedDepartments();
   const users = seedUsers(depts);
   const rules = seedRules(users, depts);
+  const slas = seedSlaConfigs(users, depts);
   db.forceSave();
-  return { depts, users, rules };
+  return { depts, users, rules, slas };
 };

@@ -1,0 +1,185 @@
+{
+  "contract": {
+    "id": "c7cbdcc5-0512-41d0-b0b0-d8e763c71a87",
+    "contract_no": "HT-DEADLINE-003",
+    "title": "测试合同 HT-DEADLINE-003",
+    "amount": 3000000,
+    "currency": "CNY",
+    "department_id": "ee60605d-655c-4e82-9a83-96e0adda4049",
+    "risk_level": "high",
+    "content": "测试合同内容",
+    "applicant_id": "01ebba7b-50b4-42ab-8295-b1d770582a22",
+    "status": "archived",
+    "created_at": 1780746388067,
+    "updated_at": 1780746388092,
+    "rule_id": "169a430f-5823-4306-a110-a33842c92ca7",
+    "rule_version": 1,
+    "rule_hit_reason": "[\"  amount greater_than_or_equal 1000000: ✓ (actual: 3000000)\",\"  risk_level in [\\\"high\\\",\\\"critical\\\"]: ✓ (actual: high)\",\"OR: ✓\"]",
+    "current_step_id": "351edee8-57d0-4287-a325-fb9df3589de3",
+    "archived_at": 1780746388092,
+    "applicant_name": "李四",
+    "department_name": "销售部"
+  },
+  "rule": {
+    "id": "169a430f-5823-4306-a110-a33842c92ca7",
+    "name": "高风险大额合同",
+    "version": 1,
+    "conditions": {
+      "type": "composite",
+      "logic": "OR",
+      "conditions": [
+        {
+          "type": "simple",
+          "field": "amount",
+          "operator": "greater_than_or_equal",
+          "value": 1000000
+        },
+        {
+          "type": "simple",
+          "field": "risk_level",
+          "operator": "in",
+          "values": [
+            "high",
+            "critical"
+          ]
+        }
+      ]
+    },
+    "steps": [
+      {
+        "name": "部门经理审批",
+        "type": "single",
+        "required_roles": [
+          "department_manager"
+        ]
+      },
+      {
+        "name": "财务和风险会签 (需2人)",
+        "type": "countersign",
+        "required_roles": [
+          "finance",
+          "risk"
+        ],
+        "required_signatures": 2
+      },
+      {
+        "name": "法务双人会签 (需2人)",
+        "type": "countersign",
+        "required_roles": [
+          "legal"
+        ],
+        "required_signatures": 2
+      },
+      {
+        "name": "CEO最终审批",
+        "type": "single",
+        "required_roles": [
+          "ceo"
+        ]
+      }
+    ],
+    "hit_reason": [
+      "  amount greater_than_or_equal 1000000: ✓ (actual: 3000000)",
+      "  risk_level in [\"high\",\"critical\"]: ✓ (actual: high)",
+      "OR: ✓"
+    ]
+  },
+  "steps": [
+    {
+      "id": "351edee8-57d0-4287-a325-fb9df3589de3",
+      "contract_id": "c7cbdcc5-0512-41d0-b0b0-d8e763c71a87",
+      "step_order": 1,
+      "step_name": "部门经理审批",
+      "step_type": "single",
+      "required_roles": [
+        "department_manager"
+      ],
+      "required_signatures": 1,
+      "assigned_to": null,
+      "status": "in_progress",
+      "started_at": 1780746388077,
+      "approvals": []
+    },
+    {
+      "id": "f6d154ac-56be-4753-8b3f-3e640ebdf37d",
+      "contract_id": "c7cbdcc5-0512-41d0-b0b0-d8e763c71a87",
+      "step_order": 2,
+      "step_name": "财务和风险会签 (需2人)",
+      "step_type": "countersign",
+      "required_roles": [
+        "finance",
+        "risk"
+      ],
+      "required_signatures": 2,
+      "assigned_to": null,
+      "status": "pending",
+      "approvals": []
+    },
+    {
+      "id": "0141df3c-ba41-4572-917b-10997764ed0e",
+      "contract_id": "c7cbdcc5-0512-41d0-b0b0-d8e763c71a87",
+      "step_order": 3,
+      "step_name": "法务双人会签 (需2人)",
+      "step_type": "countersign",
+      "required_roles": [
+        "legal"
+      ],
+      "required_signatures": 2,
+      "assigned_to": null,
+      "status": "pending",
+      "approvals": []
+    },
+    {
+      "id": "7c53547e-368f-4392-9e60-0b3d1269560f",
+      "contract_id": "c7cbdcc5-0512-41d0-b0b0-d8e763c71a87",
+      "step_order": 4,
+      "step_name": "CEO最终审批",
+      "step_type": "single",
+      "required_roles": [
+        "ceo"
+      ],
+      "required_signatures": 1,
+      "assigned_to": null,
+      "status": "pending",
+      "approvals": []
+    }
+  ],
+  "actions": [],
+  "attachments": [
+    {
+      "id": "2547bb3f-2485-40d4-856c-f2017e968958",
+      "contract_id": "c7cbdcc5-0512-41d0-b0b0-d8e763c71a87",
+      "file_name": "test.pdf",
+      "file_type": "application/pdf",
+      "file_size": 10000,
+      "file_path": null,
+      "uploaded_by": "01ebba7b-50b4-42ab-8295-b1d770582a22",
+      "uploaded_at": 1780746388069,
+      "is_required": 1
+    }
+  ],
+  "audit_logs": [
+    {
+      "id": "fce2d345-3fe7-42fd-a094-61f0f9e713b4",
+      "contract_id": "c7cbdcc5-0512-41d0-b0b0-d8e763c71a87",
+      "user_id": "01ebba7b-50b4-42ab-8295-b1d770582a22",
+      "action": "submit",
+      "old_value": {
+        "status": "draft"
+      },
+      "new_value": {
+        "status": "approving",
+        "rule_id": "169a430f-5823-4306-a110-a33842c92ca7",
+        "rule_name": "高风险大额合同",
+        "rule_version": 1
+      },
+      "ip_address": "127.0.0.1",
+      "created_at": 1780746388084,
+      "user_name": "李四",
+      "user_username": "lisi"
+    }
+  ],
+  "archived_at": 1780746388092,
+  "archived_by": "56143358-d600-4191-823a-f8b8891c3c1e",
+  "version": "1.0"
+}

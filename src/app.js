@@ -8,6 +8,9 @@ const usersRouter = require('./routes/users');
 const rulesRouter = require('./routes/rules');
 const departmentsRouter = require('./routes/departments');
 const archivesRouter = require('./routes/archives');
+const slaRouter = require('./routes/sla');
+const deadlinesRouter = require('./routes/deadlines');
+const deadlineScheduler = require('./services/DeadlineScheduler');
 
 const app = express();
 const PORT = config.port;
@@ -30,7 +33,11 @@ app.use((req, res, next) => {
 });
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: Date.now() });
+  res.json({ 
+    status: 'ok', 
+    timestamp: Date.now(),
+    deadline_scheduler: deadlineScheduler.getStatus()
+  });
 });
 
 app.use('/api/contracts', contractsRouter);
@@ -38,6 +45,8 @@ app.use('/api/users', usersRouter);
 app.use('/api/rules', rulesRouter);
 app.use('/api/departments', departmentsRouter);
 app.use('/api/archives', archivesRouter);
+app.use('/api/sla', slaRouter);
+app.use('/api/deadlines', deadlinesRouter);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -53,6 +62,14 @@ app.listen(PORT, () => {
   console.log(`合同审批 API 服务已启动`);
   console.log(`服务地址: http://localhost:${PORT}`);
   console.log(`健康检查: http://localhost:${PORT}/health`);
+  
+  if (config.enableDeadlineScheduler !== false) {
+    deadlineScheduler.start();
+    console.log(`时限催办定时任务: 已启动`);
+  } else {
+    console.log(`时限催办定时任务: 已禁用 (配置 enableDeadlineScheduler=false)`);
+  }
+  
   console.log(`========================================\n`);
 });
 

@@ -7,6 +7,7 @@ const Department = require('../models/Department');
 const AuditLog = require('../models/AuditLog');
 const Archive = require('../models/Archive');
 const RuleEngine = require('./RuleEngine');
+const DeadlineService = require('./DeadlineService');
 
 const CONTRACT_STATUSES = {
   DRAFT: 'draft',
@@ -90,6 +91,8 @@ class ContractApprovalService {
     });
     
     ApprovalStep.updateStatus(firstStepId, STEP_STATUSES.IN_PROGRESS);
+    
+    DeadlineService.handleStepStarted(contractId, firstStepId);
     
     const updatedContract = Contract.updateStatus(contractId, CONTRACT_STATUSES.APPROVING, {
       rule_id: rule.id,
@@ -244,6 +247,9 @@ class ContractApprovalService {
         ip_address: ipAddress
       });
       
+      DeadlineService.handleStepCompleted(contractId, stepId, userId, ipAddress);
+      DeadlineService.handleStepStarted(contractId, nextStep.id);
+      
       return {
         success: true,
         step_completed: true,
@@ -263,6 +269,8 @@ class ContractApprovalService {
       new_value: { status: CONTRACT_STATUSES.APPROVED },
       ip_address: ipAddress
     });
+    
+    DeadlineService.handleStepCompleted(contractId, stepId, userId, ipAddress);
     
     return {
       success: true,
@@ -287,6 +295,8 @@ class ContractApprovalService {
       ip_address: ipAddress
     });
     
+    DeadlineService.handleRejected(contractId, action === ACTION_TYPES.REJECT_ALL, userId, ipAddress);
+    
     return {
       success: true,
       rejected: true,
@@ -309,6 +319,8 @@ class ContractApprovalService {
       new_value: { status: CONTRACT_STATUSES.SUPPLEMENT_REQUESTED, step_name: step.step_name, comment },
       ip_address: ipAddress
     });
+    
+    DeadlineService.handleSupplementRequested(contractId, userId, ipAddress);
     
     return {
       success: true,
@@ -371,6 +383,10 @@ class ContractApprovalService {
       },
       ip_address: ipAddress
     });
+    
+    if (step) {
+      DeadlineService.handleStepStarted(contractId, step.id);
+    }
     
     return {
       success: true,
@@ -453,6 +469,8 @@ class ContractApprovalService {
       },
       ip_address: ipAddress
     });
+    
+    DeadlineService.handleArchived(contractId, userId, ipAddress);
     
     return {
       success: true,
